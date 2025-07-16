@@ -114,7 +114,7 @@ export const useTransaccionesStore = create<TransaccionesState>((set, get) => ({
     }
   },
   fetchTransaccionesTotales: async () => {
-    set({ loading: true, error: null });
+    set({ loadingTabla: true, error: null });
     try {
       const res = await api.get<TransaccionesResponse>("/transacciones", {
         params: {
@@ -126,7 +126,7 @@ export const useTransaccionesStore = create<TransaccionesState>((set, get) => ({
     } catch {
       set({ error: "Error al cargar todas las transacciones" });
     } finally {
-      set({ loading: false });
+      set({ loadingTabla: false });
     }
   },
   fetchResumen: async () => {
