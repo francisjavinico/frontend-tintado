@@ -132,6 +132,7 @@ export default function NuevaTransaccionModal({ isOpen, onClose }: Props) {
             <FormInput
               label="Categoría"
               name="categoria"
+              value={watch("categoria") ?? ""}
               register={register}
               error={errors.categoria?.message}
               isRequired
@@ -139,6 +140,7 @@ export default function NuevaTransaccionModal({ isOpen, onClose }: Props) {
             <FormInput
               label="Descripción"
               name="descripcion"
+              value={watch("descripcion") ?? ""}
               register={register}
               error={errors.descripcion?.message}
               isRequired
@@ -148,6 +150,7 @@ export default function NuevaTransaccionModal({ isOpen, onClose }: Props) {
               name="monto"
               type="number"
               step="0.01"
+              value={watch("monto") ?? ""}
               register={register}
               error={errors.monto?.message}
               isRequired
@@ -156,6 +159,7 @@ export default function NuevaTransaccionModal({ isOpen, onClose }: Props) {
               label="Fecha"
               name="fecha"
               type="date"
+              value={watch("fecha") ?? ""}
               register={register}
               error={errors.fecha?.message}
               isRequired
@@ -164,6 +168,7 @@ export default function NuevaTransaccionModal({ isOpen, onClose }: Props) {
               <FormInput
                 label="Nº Factura (opcional)"
                 name="numeroFacturaGasto"
+                value={watch("numeroFacturaGasto") ?? ""}
                 register={register}
                 error={errors.numeroFacturaGasto?.message}
                 maxLength={30}
