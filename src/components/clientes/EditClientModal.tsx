@@ -1,4 +1,3 @@
-import { clientSchema } from "@/schemas/clientSchema";
 import { Client } from "@/types/types";
 import {
   Modal,
@@ -14,6 +13,7 @@ import {
   FormErrorMessage,
   SimpleGrid,
   Box,
+  Checkbox,
 } from "@chakra-ui/react";
 import { useEffect, useState, useRef } from "react";
 import FormActions from "../form/FormActions";
@@ -43,6 +43,7 @@ export default function EditClientModal({
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const initialRef = useRef<HTMLInputElement>(null);
+  const [proteccionDatos, setProteccionDatos] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -63,6 +64,7 @@ export default function EditClientModal({
             }
       );
       setErrors({});
+      setProteccionDatos(false);
     }
   }, [client, isOpen]);
 
@@ -70,51 +72,29 @@ export default function EditClientModal({
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
-    const result = clientSchema.safeParse(form);
-
-    if (!result.success) {
-      const zodErrors: { [key: string]: string } = {};
-      result.error.errors.forEach((err) => {
-        const field = err.path[0];
-        if (typeof field === "string") {
-          zodErrors[field] = err.message;
-        }
-      });
-      setErrors(zodErrors);
+  const handleSubmit = async () => {
+    if (!client && !proteccionDatos) {
+      setErrors((prev) => ({
+        ...prev,
+        proteccionDatos: "Debes aceptar la política de protección de datos.",
+      }));
       return;
     }
-    const duplicates: { [key: string]: string } = {};
-    const isDuplicate = clients.some(
-      (c) =>
-        c.telefono.toLowerCase() === form.telefono?.toLowerCase() &&
-        c.id !== form.id
-    );
-    if (isDuplicate) {
-      duplicates.telefono = "Este teléfono ya está registrado";
+    try {
+      await onSave({
+        ...form,
+        consentimientoLOPD: client ? true : proteccionDatos,
+      } as any);
+      onClose();
+    } catch (error: unknown) {
+      setErrors((prev) => ({
+        ...prev,
+        submit:
+          error instanceof Error
+            ? error.message
+            : "Error al guardar el cliente",
+      }));
     }
-    const isEmailDuplicate = clients.some(
-      (c) =>
-        c.email.toLowerCase() === form.email?.toLowerCase() && c.id !== form.id
-    );
-    if (isEmailDuplicate) {
-      duplicates.email = "Este email ya está registrado";
-    }
-    const isDNIDuplicate = clients.some(
-      (c) =>
-        c.documentoIdentidad.toLowerCase() ===
-          form.documentoIdentidad?.toLowerCase() && c.id !== form.id
-    );
-    if (isDNIDuplicate) {
-      duplicates.documentoIdentidad = "Este documento ya está registrado";
-    }
-    if (Object.keys(duplicates).length > 0) {
-      setErrors(duplicates);
-      return;
-    }
-    onSave(form);
-    onClose();
-    setErrors({});
   };
 
   return (
@@ -301,6 +281,30 @@ export default function EditClientModal({
               </FormControl>
             </SimpleGrid>
           </VStack>
+          {/* Checkbox solo en modo creación */}
+          {!client && (
+            <FormControl isInvalid={!!errors.proteccionDatos} isRequired>
+              <Checkbox
+                isChecked={proteccionDatos}
+                onChange={(e) => setProteccionDatos(e.target.checked)}
+                colorScheme="blue"
+              >
+                He leído y acepto la{" "}
+                <a
+                  href="/politica-privacidad.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "#3182ce", textDecoration: "underline" }}
+                >
+                  política de protección de datos
+                </a>
+                .
+              </Checkbox>
+              <FormErrorMessage fontSize="xs" mt={1}>
+                {errors.proteccionDatos}
+              </FormErrorMessage>
+            </FormControl>
+          )}
 
           <Box mt={8}>
             <FormActions
