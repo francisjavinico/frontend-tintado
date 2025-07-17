@@ -63,7 +63,7 @@ export type NuevaCitaForm = {
   fecha: string;
   descripcion: string;
   telefono: string;
-  presupuestoMax: string;
+  presupuestoMax?: string;
   presupuestoBasico?: string;
   presupuestoIntermedio?: string;
   presupuestoPremium?: string;

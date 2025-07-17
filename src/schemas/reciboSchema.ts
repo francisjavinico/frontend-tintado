@@ -4,10 +4,6 @@ export const reciboItemSchema = z.object({
   descripcion: z.string().trim().optional(),
   cantidad: z.number().int().min(1, "La cantidad mínima es 1"),
   precioUnit: z.number().nonnegative("Precio unitario inválido"),
-  presupuestoMin: z
-    .number()
-    .nonnegative("Presupuesto mínimo inválido")
-    .optional(),
 });
 
 export const baseReciboSchema = z.object({

@@ -105,7 +105,7 @@ export default function CitaFormFields({
       // setPresupuestoDisabled({ min: true, max: false }); // Eliminar
       onChange({
         target: {
-          name: "presupuestoMin",
+          name: "presupuestoMax",
           value: 0,
         },
       });
