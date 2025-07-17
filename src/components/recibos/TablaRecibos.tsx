@@ -54,9 +54,6 @@ export default function TablaRecibos({
             <Th fontSize="sm" fontWeight="600" color="gray.700" py={3} px={4}>
               Descripción
             </Th>
-            <Th fontSize="sm" fontWeight="600" color="gray.700" py={3} px={4}>
-              Presupuestos
-            </Th>
             <Th
               fontSize="sm"
               fontWeight="600"
@@ -119,29 +116,6 @@ export default function TablaRecibos({
                 >
                   {recibo.descripcion ?? "—"}
                 </Text>
-              </Td>
-              <Td py={3} px={4}>
-                {recibo.cita?.servicios &&
-                recibo.cita.servicios[0]?.nombre === "Tintado de Lunas" ? (
-                  <Box>
-                    <Text fontSize="xs">
-                      Básico:{" "}
-                      <b>{recibo.cita.presupuestoBasico?.toFixed(2)} €</b>
-                    </Text>
-                    <Text fontSize="xs">
-                      Intermedio:{" "}
-                      <b>{recibo.cita.presupuestoIntermedio?.toFixed(2)} €</b>
-                    </Text>
-                    <Text fontSize="xs">
-                      Premium:{" "}
-                      <b>{recibo.cita.presupuestoPremium?.toFixed(2)} €</b>
-                    </Text>
-                  </Box>
-                ) : (
-                  <Text fontSize="xs" color="gray.400">
-                    —
-                  </Text>
-                )}
               </Td>
               <Td py={3} px={4} isNumeric>
                 <Text fontSize="sm" fontWeight="600" color="green.600">

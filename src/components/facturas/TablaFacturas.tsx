@@ -98,16 +98,6 @@ export default function TablaFacturas({ facturas, loading, onPreview }: Props) {
               px={4}
               isNumeric
             >
-              Presupuestos
-            </Th>
-            <Th
-              fontSize="sm"
-              fontWeight="600"
-              color="gray.700"
-              py={3}
-              px={4}
-              isNumeric
-            >
               Acciones
             </Th>
           </Tr>
@@ -169,29 +159,6 @@ export default function TablaFacturas({ facturas, loading, onPreview }: Props) {
                 >
                   Pagada
                 </Badge>
-              </Td>
-              <Td py={3} px={4}>
-                {factura.cita?.servicios &&
-                factura.cita.servicios[0]?.nombre === "Tintado de Lunas" ? (
-                  <Box>
-                    <Text fontSize="xs">
-                      Básico:{" "}
-                      <b>{factura.cita.presupuestoBasico?.toFixed(2)} €</b>
-                    </Text>
-                    <Text fontSize="xs">
-                      Intermedio:{" "}
-                      <b>{factura.cita.presupuestoIntermedio?.toFixed(2)} €</b>
-                    </Text>
-                    <Text fontSize="xs">
-                      Premium:{" "}
-                      <b>{factura.cita.presupuestoPremium?.toFixed(2)} €</b>
-                    </Text>
-                  </Box>
-                ) : (
-                  <Text fontSize="xs" color="gray.400">
-                    —
-                  </Text>
-                )}
               </Td>
               <Td py={3} px={4} isNumeric>
                 <Tooltip label={`Ver factura #${factura.id}`} placement="top">

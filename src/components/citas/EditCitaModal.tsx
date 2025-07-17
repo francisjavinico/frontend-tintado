@@ -50,7 +50,6 @@ interface EditCitaFormData {
   fecha: string;
   descripcion: string;
   telefono: string;
-  presupuestoMin?: number;
   presupuestoMax?: number;
   presupuestoBasico?: number;
   presupuestoIntermedio?: number;
@@ -77,10 +76,6 @@ export default function EditCitaModal({
     fecha: cita?.fecha ? formatFechaForInput(cita.fecha) : "",
     descripcion: cita?.descripcion ?? "",
     telefono: cita?.telefono ?? "",
-    presupuestoMin:
-      typeof cita?.presupuestoMin === "number"
-        ? cita.presupuestoMin
-        : undefined,
     presupuestoMax:
       typeof cita?.presupuestoMax === "number"
         ? cita.presupuestoMax
@@ -129,10 +124,6 @@ export default function EditCitaModal({
         fecha: cita.fecha ? formatFechaForInput(cita.fecha) : "",
         descripcion: cita.descripcion ?? "",
         telefono: cita.telefono ?? "",
-        presupuestoMin:
-          typeof cita.presupuestoMin === "number"
-            ? cita.presupuestoMin
-            : undefined,
         presupuestoMax:
           typeof cita.presupuestoMax === "number"
             ? cita.presupuestoMax
@@ -214,17 +205,12 @@ export default function EditCitaModal({
     };
     setFormData(updatedForm);
     // Validación
-    const presupuestoMin =
-      typeof updatedForm.presupuestoMin === "number"
-        ? updatedForm.presupuestoMin
-        : undefined;
     const presupuestoMax =
       typeof updatedForm.presupuestoMax === "number"
         ? updatedForm.presupuestoMax
         : undefined;
     const result = citaSchema.safeParse({
       ...updatedForm,
-      presupuestoMin,
       presupuestoMax,
     });
     if (!result.success) {
@@ -241,7 +227,6 @@ export default function EditCitaModal({
 
   const handleSubmit = async () => {
     if (isLoading) return;
-
     // Validar que haya un servicio seleccionado
     if (!servicioSeleccionado) {
       toast({
@@ -277,63 +262,47 @@ export default function EditCitaModal({
           servicioSeleccionado === "Otros" ? descripcionOtro.trim() : undefined,
       },
     ];
-
     setIsLoading(true);
-
     try {
-      // En el handleSubmit, no compares con "" para presupuestos, solo usa undefined
-      const presupuestoMin =
-        typeof formData.presupuestoMin === "number"
-          ? formData.presupuestoMin
-          : undefined;
-      const presupuestoMax =
-        typeof formData.presupuestoMax === "number"
-          ? formData.presupuestoMax
-          : undefined;
-
-      if (
-        presupuestoMin !== undefined &&
-        presupuestoMax !== undefined &&
-        presupuestoMin > presupuestoMax
-      ) {
-        toast({
-          title: "Error en presupuestos",
-          description: "El presupuesto mínimo no puede ser mayor que el máximo",
-          status: "warning",
-          duration: 4000,
-          isClosable: true,
-        });
-        return;
-      }
-
       const datosParaGuardar = {
         ...formData,
-        presupuestoMin,
-        presupuestoMax,
-        presupuestoBasico:
-          typeof formData.presupuestoBasico === "number"
-            ? formData.presupuestoBasico
-            : undefined,
-        presupuestoIntermedio:
-          typeof formData.presupuestoIntermedio === "number"
-            ? formData.presupuestoIntermedio
-            : undefined,
-        presupuestoPremium:
-          typeof formData.presupuestoPremium === "number"
-            ? formData.presupuestoPremium
-            : undefined,
         fecha: formData.fecha
           ? new Date(formData.fecha).toISOString()
           : undefined,
         descripcion: descripcionFinal,
         servicios: serviciosFinal,
         estado: formData.estado as EstadoCita,
+        ...(servicioSeleccionado === "Tintado de Lunas"
+          ? {
+              presupuestoBasico:
+                typeof formData.presupuestoBasico === "number"
+                  ? formData.presupuestoBasico
+                  : undefined,
+              presupuestoIntermedio:
+                typeof formData.presupuestoIntermedio === "number"
+                  ? formData.presupuestoIntermedio
+                  : undefined,
+              presupuestoPremium:
+                typeof formData.presupuestoPremium === "number"
+                  ? formData.presupuestoPremium
+                  : undefined,
+            }
+          : {
+              presupuestoMax:
+                typeof formData.presupuestoMax === "number"
+                  ? formData.presupuestoMax
+                  : undefined,
+            }),
       };
-
+      if (
+        servicioSeleccionado === "Tintado de Lunas" &&
+        "presupuestoMax" in datosParaGuardar
+      ) {
+        delete datosParaGuardar.presupuestoMax;
+      }
       const result = citaSchema.safeParse({
         ...datosParaGuardar,
       });
-
       if (!result.success) {
         toast({
           title: "Error en el formulario",
@@ -344,7 +313,6 @@ export default function EditCitaModal({
         });
         return;
       }
-
       if (!formData.fecha) {
         toast({
           title: "Fecha requerida",
@@ -355,14 +323,11 @@ export default function EditCitaModal({
         });
         return;
       }
-
       const nuevaFecha = datosParaGuardar.fecha;
-
       const existeConflicto = citas.some(
         (c) =>
           c.id !== cita?.id && new Date(c.fecha).toISOString() === nuevaFecha
       );
-
       if (existeConflicto) {
         toast({
           title: "Horario ocupado",
@@ -373,10 +338,8 @@ export default function EditCitaModal({
         });
         return;
       }
-
       if (cita) {
         await onSave(cita.id, datosParaGuardar);
-
         toast({
           title: "Cita actualizada",
           status: "success",
@@ -432,15 +395,19 @@ export default function EditCitaModal({
           descripcion: value === "Otros" ? descripcionOtro : undefined,
         },
       ],
+      ...(value !== "Tintado de Lunas" && {
+        presupuestoBasico: undefined,
+        presupuestoIntermedio: undefined,
+        presupuestoPremium: undefined,
+      }),
     }));
-    // Lógica de presupuesto
     if (value === "Tintado de Lunas") {
       // setPresupuestoDisabled({ min: false, max: false }); // Eliminado
     } else {
       // setPresupuestoDisabled({ min: true, max: false }); // Eliminado
       setFormData((prev) => ({
         ...prev,
-        presupuestoMin: 0,
+        presupuestoMax: 0,
       }));
     }
   };

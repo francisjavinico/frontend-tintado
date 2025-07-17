@@ -45,15 +45,16 @@ export default function PageHeader({
             {icon && <Icon as={icon} fontSize="24px" color="brand.500" />}
 
             <HStack spacing={3} align="center">
-              <Heading
-                size="lg"
-                color="gray.800"
-                _dark={{ color: "gray.100" }}
-                fontSize={{ base: "2xl", md: "3xl" }}
+              <Text
+                as="h2"
+                fontSize={{ base: "xl", md: "2xl", lg: "3xl" }}
                 fontWeight="bold"
+                color="gray.800"
+                _dark={{ color: "white" }}
+                mb={2}
               >
                 {title}
-              </Heading>
+              </Text>
               {badge && (
                 <Badge
                   colorScheme="accent"

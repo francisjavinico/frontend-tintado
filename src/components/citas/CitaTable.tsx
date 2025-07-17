@@ -274,9 +274,8 @@ export default function CitaTable({
                     </Box>
                   ) : (
                     <Text fontSize="xs" color="gray.600">
-                      {typeof cita.presupuestoMin === "number" &&
-                      typeof cita.presupuestoMax === "number"
-                        ? `${cita.presupuestoMin.toFixed(2)} € - ${cita.presupuestoMax.toFixed(2)} €`
+                      {typeof cita.presupuestoMax === "number"
+                        ? `${cita.presupuestoMax.toFixed(2)} €`
                         : "—"}
                     </Text>
                   )}

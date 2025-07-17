@@ -23,20 +23,15 @@ export const citaSchema = z
         .max(10, "Matrícula inválida")
         .optional()
     ),
-    presupuestoMin: z.preprocess(
-      (val, ctx: ZodPreprocessCtx) => {
-        const parent = ctx?.parent as { servicios?: { nombre?: string }[] };
-        if (parent?.servicios?.[0]?.nombre === "Tintado de Lunas")
-          return undefined;
-        return val;
-      },
-      z
-        .number({
-          invalid_type_error: "El presupuesto mínimo debe ser un número.",
+    servicios: z
+      .array(
+        z.object({
+          nombre: z.string().min(1, "El nombre del servicio es obligatorio"),
+          descripcion: z.string().optional(),
+          precio: z.number().nonnegative().optional(),
         })
-        .min(0, "El presupuesto mínimo debe ser 0 o mayor.")
-        .optional()
-    ),
+      )
+      .min(1, "Debe haber al menos un servicio"),
     presupuestoMax: z.preprocess(
       (val, ctx: ZodPreprocessCtx) => {
         const parent = ctx?.parent as { servicios?: { nombre?: string }[] };
@@ -51,20 +46,61 @@ export const citaSchema = z
         .positive("El presupuesto máximo debe ser un número positivo.")
         .optional()
     ),
+    presupuestoBasico: z.number().nonnegative().optional(),
+    presupuestoIntermedio: z.number().nonnegative().optional(),
+    presupuestoPremium: z.number().nonnegative().optional(),
     estado: z.enum(["pendiente", "completada", "cancelada"]),
   })
-  .refine(
-    (data) => {
-      if (
-        typeof data.presupuestoMin === "number" &&
-        typeof data.presupuestoMax === "number"
-      ) {
-        return data.presupuestoMax >= data.presupuestoMin;
+  .superRefine((data, ctx) => {
+    if (data.servicios?.[0]?.nombre === "Tintado de Lunas") {
+      if (typeof data.presupuestoBasico !== "number") {
+        ctx.addIssue({
+          path: ["presupuestoBasico"],
+          code: z.ZodIssueCode.custom,
+          message: "El presupuesto básico es obligatorio para Tintado de Lunas",
+        });
       }
-      return true;
-    },
-    {
-      path: ["presupuestoMax"],
-      message: "El presupuesto máximo debe ser mayor o igual que el mínimo.",
+      if (typeof data.presupuestoIntermedio !== "number") {
+        ctx.addIssue({
+          path: ["presupuestoIntermedio"],
+          code: z.ZodIssueCode.custom,
+          message:
+            "El presupuesto intermedio es obligatorio para Tintado de Lunas",
+        });
+      }
+      if (typeof data.presupuestoPremium !== "number") {
+        ctx.addIssue({
+          path: ["presupuestoPremium"],
+          code: z.ZodIssueCode.custom,
+          message:
+            "El presupuesto premium es obligatorio para Tintado de Lunas",
+        });
+      }
+      if (data.presupuestoMax !== undefined && data.presupuestoMax !== null) {
+        ctx.addIssue({
+          path: ["presupuestoMax"],
+          code: z.ZodIssueCode.custom,
+          message: "No se debe enviar presupuestoMax para Tintado de Lunas",
+        });
+      }
+    } else {
+      if (typeof data.presupuestoMax !== "number") {
+        ctx.addIssue({
+          path: ["presupuestoMax"],
+          code: z.ZodIssueCode.custom,
+          message: "El presupuesto es obligatorio para este servicio",
+        });
+      }
+      if (
+        typeof data.presupuestoBasico === "number" ||
+        typeof data.presupuestoIntermedio === "number" ||
+        typeof data.presupuestoPremium === "number"
+      ) {
+        ctx.addIssue({
+          path: ["presupuestoBasico"],
+          code: z.ZodIssueCode.custom,
+          message: "Solo se debe enviar un presupuesto para este servicio",
+        });
+      }
     }
-  );
+  });

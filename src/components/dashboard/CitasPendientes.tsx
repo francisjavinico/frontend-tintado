@@ -106,7 +106,6 @@ export default function CitasPendientes() {
       await updateCita(citaACancelar.id, {
         fecha: citaACancelar.fecha,
         telefono: citaACancelar.telefono,
-        presupuestoMin: citaACancelar.presupuestoMin,
         presupuestoMax: citaACancelar.presupuestoMax,
         presupuestoBasico: citaACancelar.presupuestoBasico,
         presupuestoIntermedio: citaACancelar.presupuestoIntermedio,
@@ -228,7 +227,9 @@ export default function CitasPendientes() {
                       </Text>
                     ) : (
                       <Text color="gray.600" fontSize="sm">
-                        {cita.presupuestoMin}€ - {cita.presupuestoMax}€
+                        {typeof cita.presupuestoMax === "number"
+                          ? `${cita.presupuestoMax}€`
+                          : "—"}
                       </Text>
                     )}
                   </Td>

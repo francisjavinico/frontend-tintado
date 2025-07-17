@@ -20,7 +20,7 @@ interface MobileNavItemProps {
 }
 
 const mobileNavItems = [
-  { name: "Dashboard", icon: FiGrid, route: "/dashboard" },
+  { name: "Ahumaglass", icon: FiGrid, route: "/dashboard" },
   { name: "Citas", icon: FiCalendar, route: "/citas" },
   { name: "Vehículos", icon: FiTruck, route: "/vehiculos" },
   { name: "Clientes", icon: FiUser, route: "/clients" },

@@ -31,10 +31,6 @@ export const useUserStore = create<UserState>((set) => ({
       if (axios.isAxiosError(error)) {
         message = error.response?.data?.message || error.message;
       } else {
-        console.log(
-          "[useUserStore] Error desconocido al cargar usuarios:",
-          error
-        );
       }
       if (req === currentRequest) set({ error: message });
     } finally {

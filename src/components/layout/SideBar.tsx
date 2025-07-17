@@ -61,7 +61,7 @@ interface SidebarProps extends BoxProps {
 }
 
 const ADMIN_LINKS: LinkItemProps[] = [
-  { name: "Dashboard", icon: FiGrid, route: "/dashboard" },
+  { name: "Ahumaglass", icon: FiGrid, route: "/dashboard" },
   { name: "Citas", icon: FiCalendar, route: "/citas" },
   { name: "Vehículos", icon: FiTruck, route: "/vehiculos" },
   { name: "Clientes", icon: FiUser, route: "/clients" },
@@ -72,7 +72,7 @@ const ADMIN_LINKS: LinkItemProps[] = [
 ];
 
 const EMPLEADO_LINKS: LinkItemProps[] = [
-  { name: "Dashboard", icon: FiGrid, route: "/dashboard" },
+  { name: "Ahumaglass", icon: FiGrid, route: "/dashboard" },
   { name: "Citas", icon: FiCalendar, route: "/citas" },
   { name: "Vehículos", icon: FiTruck, route: "/vehiculos" },
   { name: "Clientes", icon: FiUser, route: "/clients" },

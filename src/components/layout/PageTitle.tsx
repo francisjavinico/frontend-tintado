@@ -21,7 +21,7 @@ interface PageTitleProps {
 
 const getPageInfo = (pathname: string) => {
   const pageMap: Record<string, { title: string; icon: IconType }> = {
-    "/dashboard": { title: "Dashboard", icon: FiGrid },
+    "/dashboard": { title: "Ahumaglass", icon: FiGrid },
     "/users": { title: "Usuarios", icon: FiUsers },
     "/citas": { title: "Citas", icon: FiCalendar },
     "/vehiculos": { title: "Vehículos", icon: FiTruck },
@@ -73,12 +73,14 @@ export default function PageTitle({
         <Icon as={icon} fontSize={config.iconSize} color="brand.500" />
       )}
       <Text
-        fontSize={config.fontSize}
+        as="h1"
+        fontSize={{ base: "2xl", md: "3xl" }}
         fontWeight="bold"
         color="gray.800"
-        _dark={{ color: "gray.100" }}
+        _dark={{ color: "white" }}
+        mb={2}
       >
-        {displayTitle}
+        {title}
       </Text>
     </HStack>
   );

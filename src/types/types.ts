@@ -32,7 +32,6 @@ export interface Cita {
   descripcion: string;
   estado: EstadoCita;
   telefono: string;
-  presupuestoMin: number;
   presupuestoMax: number;
   presupuestoBasico?: number;
   presupuestoIntermedio?: number;
@@ -64,7 +63,6 @@ export type NuevaCitaForm = {
   fecha: string;
   descripcion: string;
   telefono: string;
-  presupuestoMin: string;
   presupuestoMax: string;
   presupuestoBasico?: string;
   presupuestoIntermedio?: string;
@@ -74,20 +72,11 @@ export type NuevaCitaForm = {
   servicios: Servicio[];
 };
 
-export interface Vehiculo {
-  id: number;
-  marca: string;
-  modelo: string;
-  año: number;
-  numeroPuertas: number;
-}
-
 export interface PresupuestoVehiculo {
   id: number;
   vehiculoId: number;
   citaId: number;
   descripcion: string;
-  presupuestoMin: number;
   presupuestoMax: number;
   fecha: string;
 }

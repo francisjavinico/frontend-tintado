@@ -17,7 +17,7 @@ import TransaccionesPage from "@/pages/TransaccionesPage";
 import { ReactNode } from "react";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
 
-const EMPLEADO_ROUTES = ["/dashboard", "/citas", "/vehiculos", "/clients"];
+const EMPLEADO_ROUTES = ["/ahumaglass", "/citas", "/vehiculos", "/clients"];
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const user = useAuthStore((state) => state.user);
@@ -31,7 +31,7 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
     user.role === "empleado" &&
     !EMPLEADO_ROUTES.some((route) => location.startsWith(route))
   ) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/ahumaglass" replace />;
   }
 
   return children;
@@ -70,8 +70,8 @@ export default function AppRoutes() {
           )
         }
       >
-        <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<DashboardPage />} />
+        <Route index element={<Navigate to="ahumaglass" replace />} />
+        <Route path="ahumaglass" element={<DashboardPage />} />
         <Route path="users" element={<UserPage />} />
         <Route path="clients" element={<ClientsPage />} />
         <Route path="citas" element={<CitasPage />} />
@@ -85,7 +85,7 @@ export default function AppRoutes() {
         path="*"
         element={
           isAuthenticated() ? (
-            <Navigate to="/dashboard" replace />
+            <Navigate to="/ahumaglass" replace />
           ) : (
             <Navigate to="/login" replace />
           )

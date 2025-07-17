@@ -29,7 +29,6 @@ export default function NuevaCitaPage() {
     fecha: "",
     descripcion: "",
     telefono: "",
-    presupuestoMin: "",
     presupuestoMax: "",
     matricula: "",
     estado: "pendiente",
@@ -99,18 +98,22 @@ export default function NuevaCitaPage() {
       [name]: castedValue,
     }));
 
-    const presupuestoMin =
-      parsedForm.presupuestoMin === ""
-        ? undefined
-        : Number(parsedForm.presupuestoMin);
+    // Antes de validar, eliminar presupuestoMax si es Tintado de Lunas
+    const esTintado =
+      Array.isArray(parsedForm.servicios) &&
+      parsedForm.servicios[0]?.nombre === "Tintado de Lunas";
+    if (
+      esTintado &&
+      Object.prototype.hasOwnProperty.call(parsedForm, "presupuestoMax")
+    ) {
+      delete parsedForm.presupuestoMax;
+    }
     const presupuestoMax =
       parsedForm.presupuestoMax === ""
         ? undefined
         : Number(parsedForm.presupuestoMax);
-
     const result = citaSchema.safeParse({
       ...parsedForm,
-      presupuestoMin,
       presupuestoMax,
     });
 
@@ -145,10 +148,6 @@ export default function NuevaCitaPage() {
   };
 
   const handleSubmit = async () => {
-    const presupuestoMin =
-      formData.presupuestoMin === ""
-        ? undefined
-        : Number(formData.presupuestoMin);
     const presupuestoMax =
       formData.presupuestoMax === ""
         ? undefined
@@ -165,38 +164,6 @@ export default function NuevaCitaPage() {
       toast({
         title: "Descripción requerida",
         description: "Debes especificar la descripción del servicio 'Otros'.",
-        status: "warning",
-        duration: 4000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    if (
-      presupuestoMin !== undefined &&
-      presupuestoMax !== undefined &&
-      presupuestoMin > presupuestoMax
-    ) {
-      toast({
-        title: "Error en presupuestos",
-        description: "El presupuesto mínimo no puede ser mayor que el máximo",
-        status: "warning",
-        duration: 4000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    const result = citaSchema.safeParse({
-      ...formData,
-      presupuestoMin,
-      presupuestoMax,
-    });
-
-    if (!result.success) {
-      toast({
-        title: "Error en el formulario",
-        description: result.error.errors[0]?.message ?? "Formulario inválido",
         status: "warning",
         duration: 4000,
         isClosable: true,
@@ -261,24 +228,28 @@ export default function NuevaCitaPage() {
       fecha: formData.fecha ? new Date(formData.fecha).toISOString() : "",
       descripcion: formData.descripcion,
       telefono: formData.telefono,
-      presupuestoMin,
-      presupuestoMax,
       matricula: formData.matricula,
       estado: formData.estado,
       servicios: Array.isArray(formData.servicios) ? formData.servicios : [],
-      ...(esTintado && {
-        presupuestoBasico: formData.presupuestoBasico
-          ? Number(formData.presupuestoBasico)
-          : undefined,
-        presupuestoIntermedio: formData.presupuestoIntermedio
-          ? Number(formData.presupuestoIntermedio)
-          : undefined,
-        presupuestoPremium: formData.presupuestoPremium
-          ? Number(formData.presupuestoPremium)
-          : undefined,
-      }),
+      ...(esTintado
+        ? {
+            presupuestoBasico: formData.presupuestoBasico
+              ? Number(formData.presupuestoBasico)
+              : undefined,
+            presupuestoIntermedio: formData.presupuestoIntermedio
+              ? Number(formData.presupuestoIntermedio)
+              : undefined,
+            presupuestoPremium: formData.presupuestoPremium
+              ? Number(formData.presupuestoPremium)
+              : undefined,
+          }
+        : {
+            presupuestoMax,
+          }),
     };
-
+    if (esTintado && "presupuestoMax" in soloCampos) {
+      delete soloCampos.presupuestoMax;
+    }
     const parsed = citaSchema.safeParse(soloCampos);
 
     if (!parsed.success) {
