@@ -398,7 +398,11 @@ export default function CitaFormFields({
               name="presupuestoBasico"
               type="number"
               min={0}
-              value={formData.presupuestoBasico || ""}
+              value={
+                formData.presupuestoBasico !== undefined
+                  ? String(formData.presupuestoBasico)
+                  : ""
+              }
               onChange={(e) =>
                 onChange({
                   target: {
@@ -421,7 +425,11 @@ export default function CitaFormFields({
               name="presupuestoIntermedio"
               type="number"
               min={0}
-              value={formData.presupuestoIntermedio || ""}
+              value={
+                formData.presupuestoIntermedio !== undefined
+                  ? String(formData.presupuestoIntermedio)
+                  : ""
+              }
               onChange={(e) =>
                 onChange({
                   target: {
@@ -444,7 +452,11 @@ export default function CitaFormFields({
               name="presupuestoPremium"
               type="number"
               min={0}
-              value={formData.presupuestoPremium || ""}
+              value={
+                formData.presupuestoPremium !== undefined
+                  ? String(formData.presupuestoPremium)
+                  : ""
+              }
               onChange={(e) =>
                 onChange({
                   target: {
@@ -469,7 +481,11 @@ export default function CitaFormFields({
             name="presupuestoMax"
             type="number"
             min={0}
-            value={formData.presupuestoMax || ""}
+            value={
+              formData.presupuestoMax !== undefined
+                ? String(formData.presupuestoMax)
+                : ""
+            }
             onChange={(e) =>
               onChange({
                 target: {
