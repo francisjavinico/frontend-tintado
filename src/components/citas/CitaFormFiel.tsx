@@ -5,12 +5,12 @@ import {
   VStack,
   Text,
   useColorModeValue,
-  SimpleGrid,
   Divider,
   Flex,
 } from "@chakra-ui/react";
 import { ChangeEvent, useState, useEffect } from "react";
 import FormInput from "../form/FormInput";
+import FormDateInput from "../form/FormDateInput";
 import VehicleAutocomplete from "../vehiculos/VehicleAutocomplete";
 import {
   FiCheck,
@@ -21,7 +21,6 @@ import {
 } from "react-icons/fi";
 import { Servicio } from "@/types/types";
 import { Select, Input, HStack } from "@chakra-ui/react";
-import dayjs from "dayjs";
 
 const opcionesServicios = [
   "Tintado de Lunas",
@@ -140,38 +139,6 @@ export default function CitaFormFields({
   };
 
   // Eliminar cualquier declaración o uso de presupuestoDisabled
-
-  // Estado local para fecha y hora separadas
-  const [fechaLocal, setFechaLocal] = useState<string>("");
-  const [horaLocal, setHoraLocal] = useState<string>("");
-
-  // Sincronizar fecha y hora locales con formData.fecha
-  useEffect(() => {
-    if (formData.fecha) {
-      const d = dayjs(formData.fecha);
-      setFechaLocal(
-        typeof d.format === "function" ? d.format("YYYY-MM-DD") : ""
-      );
-      setHoraLocal(typeof d.format === "function" ? d.format("HH:mm") : "");
-    } else {
-      setFechaLocal("");
-      setHoraLocal("");
-    }
-  }, [formData.fecha]);
-
-  // Handler para cambios en fecha/hora
-  const handleFechaHoraChange = (tipo: "fecha" | "hora", valor: string) => {
-    let nuevaFecha = fechaLocal;
-    let nuevaHora = horaLocal;
-    if (tipo === "fecha") nuevaFecha = valor;
-    if (tipo === "hora") nuevaHora = valor;
-    setFechaLocal(nuevaFecha);
-    setHoraLocal(nuevaHora);
-    if (nuevaFecha && nuevaHora) {
-      const fechaIso = dayjs(`${nuevaFecha}T${nuevaHora}`).toISOString();
-      onChange({ target: { name: "fecha", value: fechaIso } });
-    }
-  };
 
   // Sincronizar servicioSeleccionado con formData.servicios
   useEffect(() => {
@@ -294,28 +261,66 @@ export default function CitaFormFields({
         </Flex>
 
         <VStack spacing={4} align="stretch">
-          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-            <FormInput
-              w="full"
+          <HStack spacing={4} align="flex-start" flexWrap="wrap">
+            <FormDateInput
+              w="260px"
               label="Fecha"
-              name="fechaLocal"
+              name="fecha"
               type="date"
-              value={fechaLocal ?? ""}
-              onChange={(e) => handleFechaHoraChange("fecha", e.target.value)}
+              value={formData.fecha ? formData.fecha.split("T")[0] : ""}
+              onChange={(e) => {
+                // Mantener la hora si existe
+                const hora = formData.fecha?.split("T")[1] || "00:00";
+                const nuevaFecha = e.target.value
+                  ? `${e.target.value}T${hora}`
+                  : "";
+                onChange({
+                  target: {
+                    name: "fecha",
+                    value: nuevaFecha,
+                  },
+                });
+              }}
               error={errors.fecha}
               isRequired
+              _focus={{
+                borderColor: "brand.500",
+                boxShadow: "0 0 0 1px var(--chakra-colors-brand-500)",
+              }}
             />
             <FormInput
-              w="full"
+              w="220px"
               label="Hora"
-              name="horaLocal"
+              name="hora"
               type="time"
-              value={horaLocal ?? ""}
-              onChange={(e) => handleFechaHoraChange("hora", e.target.value)}
+              value={
+                formData.fecha
+                  ? formData.fecha.split("T")[1]?.slice(0, 5) || ""
+                  : ""
+              }
+              onChange={(e) => {
+                // Mantener la fecha si existe
+                const fecha = formData.fecha?.split("T")[0] || "";
+                const nuevaFecha =
+                  fecha && e.target.value ? `${fecha}T${e.target.value}` : "";
+                onChange({
+                  target: {
+                    name: "fecha",
+                    value: nuevaFecha,
+                  },
+                });
+              }}
               error={errors.fecha}
               isRequired
+              placeholder="HH:MM"
+              step="60"
+              inputMode="decimal"
+              _focus={{
+                borderColor: "brand.500",
+                boxShadow: "0 0 0 1px var(--chakra-colors-brand-500)",
+              }}
             />
-          </SimpleGrid>
+          </HStack>
         </VStack>
       </Box>
 
@@ -392,17 +397,13 @@ export default function CitaFormFields({
           </Text>
         </Flex>
         {esTintado ? (
-          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+          <HStack spacing={4} align="flex-start" flexWrap="nowrap">
             <FormInput
-              label="Presupuesto Standard (€)"
+              label="Presupuesto Standar (€)"
               name="presupuestoBasico"
               type="number"
               min={0}
-              value={
-                formData.presupuestoBasico !== undefined
-                  ? String(formData.presupuestoBasico)
-                  : ""
-              }
+              value={formData.presupuestoBasico || ""}
               onChange={(e) =>
                 onChange({
                   target: {
@@ -419,17 +420,15 @@ export default function CitaFormFields({
               placeholder="0.00"
               step="0.01"
               inputMode="decimal"
+              w="180px"
+              maxW="180px"
             />
             <FormInput
               label="Presupuesto Pro (€)"
               name="presupuestoIntermedio"
               type="number"
               min={0}
-              value={
-                formData.presupuestoIntermedio !== undefined
-                  ? String(formData.presupuestoIntermedio)
-                  : ""
-              }
+              value={formData.presupuestoIntermedio || ""}
               onChange={(e) =>
                 onChange({
                   target: {
@@ -446,17 +445,15 @@ export default function CitaFormFields({
               placeholder="0.00"
               step="0.01"
               inputMode="decimal"
+              w="180px"
+              maxW="180px"
             />
             <FormInput
               label="Presupuesto Premium (€)"
               name="presupuestoPremium"
               type="number"
               min={0}
-              value={
-                formData.presupuestoPremium !== undefined
-                  ? String(formData.presupuestoPremium)
-                  : ""
-              }
+              value={formData.presupuestoPremium || ""}
               onChange={(e) =>
                 onChange({
                   target: {
@@ -473,19 +470,17 @@ export default function CitaFormFields({
               placeholder="0.00"
               step="0.01"
               inputMode="decimal"
+              w="180px"
+              maxW="180px"
             />
-          </SimpleGrid>
+          </HStack>
         ) : (
           <FormInput
             label="Presupuesto Máximo (€)"
             name="presupuestoMax"
             type="number"
             min={0}
-            value={
-              formData.presupuestoMax !== undefined
-                ? String(formData.presupuestoMax)
-                : ""
-            }
+            value={formData.presupuestoMax || ""}
             onChange={(e) =>
               onChange({
                 target: {

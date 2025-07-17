@@ -148,6 +148,13 @@ export default function CheckinTabletPage() {
         p={8}
         mt={0}
       >
+        <Box display="flex" justifyContent="center" mb={4}>
+          <img
+            src="/logo.png"
+            alt="Logo"
+            style={{ maxWidth: 140, height: "auto" }}
+          />
+        </Box>
         <Text fontSize="2xl" fontWeight="bold" mb={4} textAlign="center">
           Formulario de Check-in
         </Text>

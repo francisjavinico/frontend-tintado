@@ -7,6 +7,7 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  Heading,
   Input,
   Stack,
   Text,
@@ -18,7 +19,6 @@ import { z } from "zod";
 import ForgotPasswordForm from "../components/auth/ForgotPasswordForm";
 import { hasUsersApi } from "../api/auth";
 import CreateFirstUserForm from "../components/auth/CreateFirstUserForm";
-import Logo from "../components/layout/Logo";
 
 export default function LoginPage() {
   const login = useAuthStore((state) => state.login);
@@ -76,23 +76,19 @@ export default function LoginPage() {
       justify="center"
       bg={colorBg}
     >
-      <Stack spacing={0} mx="auto" maxW="lg" py={0} px={6}>
-        <Box
-          rounded="lg"
-          bg={colorBox}
-          boxShadow="lg"
-          p={8}
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-        >
-          <Logo
-            size="xl"
-            showText={false}
-            variant="default"
-            containerProps={{ mb: 0 }}
-          />
-          <Stack spacing={2} w="100%">
+      <Stack spacing={8} mx="auto" maxW="lg" py={12} px={6}>
+        <Stack align="center">
+          <Heading fontSize="4xl">Iniciar sesión</Heading>
+        </Stack>
+        <Box rounded="lg" bg={colorBox} boxShadow="lg" p={8}>
+          <Box display="flex" justifyContent="center" mb={6}>
+            <img
+              src="/logo.png"
+              alt="Logo"
+              style={{ maxWidth: 140, height: "auto" }}
+            />
+          </Box>
+          <Stack spacing={4}>
             {hasUsers === false && (
               <Button
                 colorScheme="blue"
