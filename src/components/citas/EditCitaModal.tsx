@@ -677,7 +677,11 @@ export default function EditCitaModal({
                     name="presupuestoBasico"
                     type="number"
                     min={0}
-                    value={formData.presupuestoBasico || ""}
+                    value={
+                      formData.presupuestoBasico !== undefined
+                        ? String(formData.presupuestoBasico)
+                        : ""
+                    }
                     onChange={handleChange}
                     placeholder="0.00"
                     step="0.01"
@@ -696,7 +700,11 @@ export default function EditCitaModal({
                     name="presupuestoIntermedio"
                     type="number"
                     min={0}
-                    value={formData.presupuestoIntermedio || ""}
+                    value={
+                      formData.presupuestoIntermedio !== undefined
+                        ? String(formData.presupuestoIntermedio)
+                        : ""
+                    }
                     onChange={handleChange}
                     placeholder="0.00"
                     step="0.01"
@@ -712,7 +720,11 @@ export default function EditCitaModal({
                     name="presupuestoPremium"
                     type="number"
                     min={0}
-                    value={formData.presupuestoPremium || ""}
+                    value={
+                      formData.presupuestoPremium !== undefined
+                        ? String(formData.presupuestoPremium)
+                        : ""
+                    }
                     onChange={handleChange}
                     placeholder="0.00"
                     step="0.01"
@@ -736,7 +748,11 @@ export default function EditCitaModal({
                   name="presupuestoMax"
                   type="number"
                   min={0}
-                  value={formData.presupuestoMax || ""}
+                  value={
+                    formData.presupuestoMax !== undefined
+                      ? String(formData.presupuestoMax)
+                      : ""
+                  }
                   onChange={handleChange}
                   placeholder="0.00"
                   step="0.01"
