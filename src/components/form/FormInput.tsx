@@ -36,9 +36,11 @@ function FormInput<T extends FieldValues>({
   onChange,
   ...rest
 }: FormInputProps<T>) {
-  const inputProps = register
-    ? { ...register(name as Path<T>) }
-    : { value, onChange };
+  const inputProps = {
+    ...(register ? { ...register(name as Path<T>) } : {}),
+    value,
+    onChange,
+  };
 
   return (
     <FormControl
