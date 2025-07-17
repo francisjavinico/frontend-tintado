@@ -156,7 +156,7 @@ export default function ClientAppointmentsModal() {
                           <Text as="span" fontWeight="medium">
                             Presupuesto:
                           </Text>{" "}
-                          €{cita.presupuestoMin} - €{cita.presupuestoMax}
+                          €{cita.presupuestoMax}
                         </Text>
                       </HStack>
 

@@ -218,7 +218,7 @@ export default function HistorialPresupuestosModal({
                               py={1}
                               fontSize="sm"
                             >
-                              {formatCurrency(p.presupuestoMin)}
+                              {formatCurrency(p.presupuestoMax)}
                             </Badge>
                           </Td>
                           <Td px={6} py={4} textAlign="center">
