@@ -15,7 +15,7 @@ interface FormInputProps<T extends FieldValues> {
   register?: UseFormRegister<T>;
   error?: string;
   isRequired?: boolean;
-  value?: string | number;
+  value: string | number;
   onChange?: (
     e:
       | React.ChangeEvent<HTMLInputElement>
