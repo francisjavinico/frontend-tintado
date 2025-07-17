@@ -13,7 +13,8 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
+import Logo from "../components/layout/Logo";
 
 const emptyClient = {
   nombre: "",
@@ -27,7 +28,6 @@ const emptyClient = {
 };
 export default function CheckinTabletPage() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const toast = useToast();
   const [formData, setFormData] = useState(emptyClient);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -112,7 +112,7 @@ export default function CheckinTabletPage() {
         duration: 3000,
         isClosable: true,
       });
-      navigate("/gracias");
+      window.location.href = "https://ahumaglass.es";
     } catch {
       toast({
         title: "Error al registrar los datos",
@@ -128,10 +128,17 @@ export default function CheckinTabletPage() {
       bg="gray.50"
       minH="100vh"
       display="flex"
+      flexDirection="column"
       justifyContent="center"
       alignItems="center"
       px={4}
     >
+      <Logo
+        size="xl"
+        showText={false}
+        variant="default"
+        containerProps={{ mb: 0 }}
+      />
       <Box
         bg="white"
         borderRadius="xl"
@@ -139,6 +146,7 @@ export default function CheckinTabletPage() {
         maxW="sm"
         w="100%"
         p={8}
+        mt={0}
       >
         <Text fontSize="2xl" fontWeight="bold" mb={4} textAlign="center">
           Formulario de Check-in

@@ -185,7 +185,7 @@ export default function ClientsPage() {
         <Flex justify="space-between" align="start" mb={3}>
           <Box flex="1">
             <Text fontWeight="semibold" fontSize="md" color="gray.800">
-              {client.nombre} {client.apellido}
+              {client.nombre?.trim()} {client.apellido?.trim()}
             </Text>
             <Text fontSize="sm" color="gray.600" mt={1}>
               {client.telefono}
@@ -197,9 +197,11 @@ export default function ClientsPage() {
             )}
           </Box>
           <HStack spacing={1}>
-            <Tooltip label={`Editar ${client.nombre} ${client.apellido}`}>
+            <Tooltip
+              label={`Editar ${client.nombre?.trim()} ${client.apellido?.trim()}`}
+            >
               <IconButton
-                aria-label={`Editar ${client.nombre} ${client.apellido}`}
+                aria-label={`Editar ${client.nombre?.trim()} ${client.apellido?.trim()}`}
                 icon={<EditIcon />}
                 size="sm"
                 colorScheme="blue"
@@ -207,9 +209,11 @@ export default function ClientsPage() {
                 onClick={() => handleEdit(client)}
               />
             </Tooltip>
-            <Tooltip label={`Eliminar ${client.nombre} ${client.apellido}`}>
+            <Tooltip
+              label={`Eliminar ${client.nombre?.trim()} ${client.apellido?.trim()}`}
+            >
               <IconButton
-                aria-label={`Eliminar ${client.nombre} ${client.apellido}`}
+                aria-label={`Eliminar ${client.nombre?.trim()} ${client.apellido?.trim()}`}
                 icon={<DeleteIcon />}
                 size="sm"
                 colorScheme="red"
@@ -445,7 +449,7 @@ export default function ClientsPage() {
                           color="gray.800"
                           fontSize="sm"
                         >
-                          {client.nombre} {client.apellido}
+                          {client.nombre?.trim()} {client.apellido?.trim()}
                         </Text>
                         {client.direccion && (
                           <Text fontSize="xs" color="gray.600" mt={0.5}>
@@ -472,10 +476,10 @@ export default function ClientsPage() {
                     <Td px={3}>
                       <HStack justify="center" spacing={1}>
                         <Tooltip
-                          label={`Editar cliente ${client.nombre} ${client.apellido}`}
+                          label={`Editar cliente ${client.nombre?.trim()} ${client.apellido?.trim()}`}
                         >
                           <IconButton
-                            aria-label={`Editar cliente ${client.nombre} ${client.apellido}`}
+                            aria-label={`Editar cliente ${client.nombre?.trim()} ${client.apellido?.trim()}`}
                             icon={<EditIcon />}
                             size="xs"
                             colorScheme="blue"
@@ -484,10 +488,10 @@ export default function ClientsPage() {
                           />
                         </Tooltip>
                         <Tooltip
-                          label={`Eliminar cliente ${client.nombre} ${client.apellido}`}
+                          label={`Eliminar cliente ${client.nombre?.trim()} ${client.apellido?.trim()}`}
                         >
                           <IconButton
-                            aria-label={`Eliminar cliente ${client.nombre} ${client.apellido}`}
+                            aria-label={`Eliminar cliente ${client.nombre?.trim()} ${client.apellido?.trim()}`}
                             icon={<DeleteIcon />}
                             size="xs"
                             colorScheme="red"
@@ -496,10 +500,10 @@ export default function ClientsPage() {
                           />
                         </Tooltip>
                         <Tooltip
-                          label={`Ver historial de citas de ${client.nombre} ${client.apellido}`}
+                          label={`Ver historial de citas de ${client.nombre?.trim()} ${client.apellido?.trim()}`}
                         >
                           <IconButton
-                            aria-label={`Ver historial de citas de ${client.nombre} ${client.apellido}`}
+                            aria-label={`Ver historial de citas de ${client.nombre?.trim()} ${client.apellido?.trim()}`}
                             icon={<CalendarIcon />}
                             size="xs"
                             colorScheme="purple"
@@ -508,10 +512,10 @@ export default function ClientsPage() {
                           />
                         </Tooltip>
                         <Tooltip
-                          label={`Crear nueva cita para ${client.nombre} ${client.apellido}`}
+                          label={`Crear nueva cita para ${client.nombre?.trim()} ${client.apellido?.trim()}`}
                         >
                           <IconButton
-                            aria-label={`Crear nueva cita para ${client.nombre} ${client.apellido}`}
+                            aria-label={`Crear nueva cita para ${client.nombre?.trim()} ${client.apellido?.trim()}`}
                             icon={<MdAddCircleOutline fontSize="2rem" />}
                             colorScheme="teal"
                             variant="ghost"

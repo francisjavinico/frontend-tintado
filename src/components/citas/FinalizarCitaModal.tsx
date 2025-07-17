@@ -235,7 +235,8 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
                   Nombre completo:
                 </Text>
                 <Text fontSize="sm" fontWeight="500">
-                  {cita.cliente?.nombre} {cita.cliente?.apellido}
+                  {cita.cliente?.nombre?.trim()}{" "}
+                  {cita.cliente?.apellido?.trim()}
                 </Text>
               </HStack>
 

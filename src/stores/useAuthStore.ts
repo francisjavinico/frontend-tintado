@@ -64,16 +64,11 @@ export const useAuthStore = create<AuthState>((set, get) => {
           const axiosErr = err as AxiosError<{ message?: string }>;
           const serverMsg = axiosErr.response?.data.message;
 
-          if (axiosErr.response?.status === 400) {
-            if (req === currentRequest)
-              set({ error: serverMsg || "Email o contraseña incorrectos" });
-          } else if (axiosErr.response?.status === 401) {
-            if (req === currentRequest) set({ error: "No estás autorizado" });
-          } else {
-            if (req === currentRequest)
-              set({
-                error: "Error inesperado: " + (serverMsg ?? axiosErr.message),
-              });
+          if (req === currentRequest) {
+            set({
+              error:
+                serverMsg || axiosErr.message || "Ocurrió un error inesperado",
+            });
           }
         } else {
           if (req === currentRequest)

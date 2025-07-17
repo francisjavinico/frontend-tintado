@@ -11,7 +11,6 @@ import {
 } from "@chakra-ui/react";
 import { ChangeEvent, useState, useEffect } from "react";
 import FormInput from "../form/FormInput";
-import FormDateInput from "../form/FormDateInput";
 import VehicleAutocomplete from "../vehiculos/VehicleAutocomplete";
 import {
   FiCheck,
@@ -22,6 +21,7 @@ import {
 } from "react-icons/fi";
 import { Servicio } from "@/types/types";
 import { Select, Input, HStack } from "@chakra-ui/react";
+import dayjs from "dayjs";
 
 const opcionesServicios = [
   "Tintado de Lunas",
@@ -140,6 +140,36 @@ export default function CitaFormFields({
   };
 
   // Eliminar cualquier declaración o uso de presupuestoDisabled
+
+  // Estado local para fecha y hora separadas
+  const [fechaLocal, setFechaLocal] = useState<string>("");
+  const [horaLocal, setHoraLocal] = useState<string>("");
+
+  // Sincronizar fecha y hora locales con formData.fecha
+  useEffect(() => {
+    if (formData.fecha) {
+      const d = dayjs(formData.fecha);
+      setFechaLocal(d.format("YYYY-MM-DD"));
+      setHoraLocal(d.format("HH:mm"));
+    } else {
+      setFechaLocal("");
+      setHoraLocal("");
+    }
+  }, [formData.fecha]);
+
+  // Handler para cambios en fecha/hora
+  const handleFechaHoraChange = (tipo: "fecha" | "hora", valor: string) => {
+    let nuevaFecha = fechaLocal;
+    let nuevaHora = horaLocal;
+    if (tipo === "fecha") nuevaFecha = valor;
+    if (tipo === "hora") nuevaHora = valor;
+    setFechaLocal(nuevaFecha);
+    setHoraLocal(nuevaHora);
+    if (nuevaFecha && nuevaHora) {
+      const fechaIso = dayjs(`${nuevaFecha}T${nuevaHora}`).toISOString();
+      onChange({ target: { name: "fecha", value: fechaIso } });
+    }
+  };
 
   // Sincronizar servicioSeleccionado con formData.servicios
   useEffect(() => {
@@ -262,20 +292,28 @@ export default function CitaFormFields({
         </Flex>
 
         <VStack spacing={4} align="stretch">
-          <FormDateInput
-            w="full"
-            label="Fecha y hora"
-            name="fecha"
-            type="datetime-local"
-            value={formData.fecha}
-            onChange={onChange}
-            error={errors.fecha}
-            isRequired
-            _focus={{
-              borderColor: "brand.500",
-              boxShadow: "0 0 0 1px var(--chakra-colors-brand-500)",
-            }}
-          />
+          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+            <FormInput
+              w="full"
+              label="Fecha"
+              name="fechaLocal"
+              type="date"
+              value={fechaLocal}
+              onChange={(e) => handleFechaHoraChange("fecha", e.target.value)}
+              error={errors.fecha}
+              isRequired
+            />
+            <FormInput
+              w="full"
+              label="Hora"
+              name="horaLocal"
+              type="time"
+              value={horaLocal}
+              onChange={(e) => handleFechaHoraChange("hora", e.target.value)}
+              error={errors.fecha}
+              isRequired
+            />
+          </SimpleGrid>
         </VStack>
       </Box>
 
@@ -352,9 +390,9 @@ export default function CitaFormFields({
           </Text>
         </Flex>
         {esTintado ? (
-          <>
+          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
             <FormInput
-              label="Presupuesto Básico (€)"
+              label="Presupuesto Standard (€)"
               name="presupuestoBasico"
               type="number"
               min={0}
@@ -377,7 +415,7 @@ export default function CitaFormFields({
               inputMode="decimal"
             />
             <FormInput
-              label="Presupuesto Intermedio (€)"
+              label="Presupuesto Pro (€)"
               name="presupuestoIntermedio"
               type="number"
               min={0}
@@ -422,7 +460,7 @@ export default function CitaFormFields({
               step="0.01"
               inputMode="decimal"
             />
-          </>
+          </SimpleGrid>
         ) : (
           <FormInput
             label="Presupuesto Máximo (€)"

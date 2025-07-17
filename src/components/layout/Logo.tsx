@@ -65,11 +65,10 @@ export default function Logo({
   return (
     <Box
       flexShrink={0}
-      bg={variantStyle.bg}
       position="relative"
-      overflow="hidden"
-      minH={config.containerHeight}
+      overflow="visible"
       {...containerProps}
+      p={0}
     >
       {/* Background Pattern for white variant */}
       {variant === "white" && (
@@ -89,10 +88,9 @@ export default function Logo({
         direction="column"
         align="center"
         justify="center"
-        h="full"
         position="relative"
         zIndex={1}
-        {...config.padding}
+        p={0}
       >
         <Image
           src={logo}

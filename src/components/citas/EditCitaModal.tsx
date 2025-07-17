@@ -24,6 +24,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { CheckIcon } from "@chakra-ui/icons";
+import dayjs from "dayjs";
 
 interface Props {
   isOpen: boolean;
@@ -106,6 +107,36 @@ export default function EditCitaModal({
     cita?.servicios?.[0]?.nombre || ""
   );
   const [descripcionOtro, setDescripcionOtro] = useState<string>("");
+
+  // Estado local para fecha y hora separadas
+  const [fechaLocal, setFechaLocal] = useState<string>("");
+  const [horaLocal, setHoraLocal] = useState<string>("");
+
+  // Sincronizar fecha y hora locales con formData.fecha
+  useEffect(() => {
+    if (formData.fecha) {
+      const d = dayjs(formData.fecha);
+      setFechaLocal(d.format("YYYY-MM-DD"));
+      setHoraLocal(d.format("HH:mm"));
+    } else {
+      setFechaLocal("");
+      setHoraLocal("");
+    }
+  }, [formData.fecha]);
+
+  // Handler para cambios en fecha/hora
+  const handleFechaHoraChange = (tipo: "fecha" | "hora", valor: string) => {
+    let nuevaFecha = fechaLocal;
+    let nuevaHora = horaLocal;
+    if (tipo === "fecha") nuevaFecha = valor;
+    if (tipo === "hora") nuevaHora = valor;
+    setFechaLocal(nuevaFecha);
+    setHoraLocal(nuevaHora);
+    if (nuevaFecha && nuevaHora) {
+      const fechaIso = dayjs(`${nuevaFecha}T${nuevaHora}`).toISOString();
+      setFormData((prev) => ({ ...prev, fecha: fechaIso }));
+    }
+  };
 
   // Modifico resetFormState para también actualizar el servicio seleccionado y la descripción personalizada
   const resetFormState = useCallback(() => {
@@ -575,16 +606,32 @@ export default function EditCitaModal({
               >
                 Fecha y hora
               </FormLabel>
-              <Input
-                type="datetime-local"
-                name="fecha"
-                value={formData.fecha || ""}
-                onChange={handleChange}
-                _focus={{
-                  borderColor: "brand.500",
-                  boxShadow: "0 0 0 1px var(--chakra-colors-brand-500)",
-                }}
-              />
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                <Input
+                  type="date"
+                  name="fechaLocal"
+                  value={fechaLocal}
+                  onChange={(e) =>
+                    handleFechaHoraChange("fecha", e.target.value)
+                  }
+                  _focus={{
+                    borderColor: "brand.500",
+                    boxShadow: "0 0 0 1px var(--chakra-colors-brand-500)",
+                  }}
+                />
+                <Input
+                  type="time"
+                  name="horaLocal"
+                  value={horaLocal}
+                  onChange={(e) =>
+                    handleFechaHoraChange("hora", e.target.value)
+                  }
+                  _focus={{
+                    borderColor: "brand.500",
+                    boxShadow: "0 0 0 1px var(--chakra-colors-brand-500)",
+                  }}
+                />
+              </SimpleGrid>
               <FormErrorMessage>{errors.fecha}</FormErrorMessage>
             </FormControl>
 

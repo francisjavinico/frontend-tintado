@@ -71,7 +71,7 @@ export default function ClientAppointmentsModal() {
           <VStack align="start" spacing={2}>
             <Text>Historial de Citas</Text>
             <Text fontSize="md" color="gray.600" fontWeight="normal">
-              {client?.nombre} {client?.apellido}
+              {client?.nombre?.trim()} {client?.apellido?.trim()}
             </Text>
           </VStack>
         </ModalHeader>

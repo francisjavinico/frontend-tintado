@@ -89,7 +89,7 @@ export default function CitaRow({
           _dark={{ color: "gray.200" }}
         >
           {cita.cliente
-            ? `${cita.cliente.nombre} ${cita.cliente.apellido}`
+            ? `${cita.cliente.nombre?.trim()} ${cita.cliente.apellido?.trim()}`
             : "—"}
         </Text>
       </Td>
