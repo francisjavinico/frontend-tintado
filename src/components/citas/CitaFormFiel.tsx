@@ -298,7 +298,7 @@ export default function CitaFormFields({
               label="Fecha"
               name="fechaLocal"
               type="date"
-              value={fechaLocal}
+              value={fechaLocal || ""}
               onChange={(e) => handleFechaHoraChange("fecha", e.target.value)}
               error={errors.fecha}
               isRequired
@@ -308,7 +308,7 @@ export default function CitaFormFields({
               label="Hora"
               name="horaLocal"
               type="time"
-              value={horaLocal}
+              value={horaLocal || ""}
               onChange={(e) => handleFechaHoraChange("hora", e.target.value)}
               error={errors.fecha}
               isRequired
