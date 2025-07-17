@@ -112,7 +112,7 @@ export default function CheckinTabletPage() {
         duration: 3000,
         isClosable: true,
       });
-      navigate("/gracias");
+      window.location.href = "https://ahumaglass.es";
     } catch {
       toast({
         title: "Error al registrar los datos",
@@ -140,6 +140,13 @@ export default function CheckinTabletPage() {
         w="100%"
         p={8}
       >
+        <Box display="flex" justifyContent="center" mb={4}>
+          <img
+            src="/logo.png"
+            alt="Logo"
+            style={{ maxWidth: 140, height: "auto" }}
+          />
+        </Box>
         <Text fontSize="2xl" fontWeight="bold" mb={4} textAlign="center">
           Formulario de Check-in
         </Text>

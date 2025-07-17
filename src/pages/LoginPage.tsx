@@ -81,6 +81,13 @@ export default function LoginPage() {
           <Heading fontSize="4xl">Iniciar sesión</Heading>
         </Stack>
         <Box rounded="lg" bg={colorBox} boxShadow="lg" p={8}>
+          <Box display="flex" justifyContent="center" mb={6}>
+            <img
+              src="/logo.png"
+              alt="Logo"
+              style={{ maxWidth: 140, height: "auto" }}
+            />
+          </Box>
           <Stack spacing={4}>
             {hasUsers === false && (
               <Button
