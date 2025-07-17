@@ -149,8 +149,10 @@ export default function CitaFormFields({
   useEffect(() => {
     if (formData.fecha) {
       const d = dayjs(formData.fecha);
-      setFechaLocal(d.format("YYYY-MM-DD"));
-      setHoraLocal(d.format("HH:mm"));
+      setFechaLocal(
+        typeof d.format === "function" ? d.format("YYYY-MM-DD") : ""
+      );
+      setHoraLocal(typeof d.format === "function" ? d.format("HH:mm") : "");
     } else {
       setFechaLocal("");
       setHoraLocal("");
@@ -298,7 +300,7 @@ export default function CitaFormFields({
               label="Fecha"
               name="fechaLocal"
               type="date"
-              value={fechaLocal || ""}
+              value={fechaLocal}
               onChange={(e) => handleFechaHoraChange("fecha", e.target.value)}
               error={errors.fecha}
               isRequired
@@ -308,7 +310,7 @@ export default function CitaFormFields({
               label="Hora"
               name="horaLocal"
               type="time"
-              value={horaLocal || ""}
+              value={horaLocal}
               onChange={(e) => handleFechaHoraChange("hora", e.target.value)}
               error={errors.fecha}
               isRequired
