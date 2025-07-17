@@ -117,7 +117,7 @@ export default function EditarTransaccionModal({
         <ModalHeader>Editar Transacción</ModalHeader>
         <ModalCloseButton />
         <ModalBody as="form" onSubmit={handleSubmit(onSubmit)} pb={6}>
-          <FormSelect
+          <FormSelect<FormData>
             mb={3}
             label="Tipo"
             name="tipo"
@@ -125,50 +125,56 @@ export default function EditarTransaccionModal({
               { value: "ingreso", label: "Ingreso" },
               { value: "gasto", label: "Gasto" },
             ]}
+            value={watch("tipo") ?? ""}
             register={register}
             error={errors.tipo?.message}
             isRequired
           />
-          <FormInput
+          <FormInput<FormData>
             mb={3}
             label="Categoría"
             name="categoria"
+            value={watch("categoria") ?? ""}
             register={register}
             error={errors.categoria?.message}
             isRequired
           />
-          <FormInput
+          <FormInput<FormData>
             mb={3}
             label="Descripción"
             name="descripcion"
+            value={watch("descripcion") ?? ""}
             register={register}
             error={errors.descripcion?.message}
             isRequired
           />
-          <FormInput
+          <FormInput<FormData>
             mb={3}
             label="Monto (€)"
             name="monto"
             type="number"
             step="0.01"
+            value={watch("monto") ?? ""}
             register={register}
             error={errors.monto?.message}
             isRequired
           />
-          <FormInput
+          <FormInput<FormData>
             mb={3}
             label="Fecha"
             name="fecha"
             type="date"
+            value={watch("fecha") ?? ""}
             register={register}
             error={errors.fecha?.message}
             isRequired
           />
           {tipoSeleccionado === "gasto" && (
-            <FormInput
+            <FormInput<FormData>
               mb={3}
               label="Nº Factura (opcional)"
               name="numeroFacturaGasto"
+              value={watch("numeroFacturaGasto") ?? ""}
               register={register}
               error={errors.numeroFacturaGasto?.message}
               maxLength={30}
