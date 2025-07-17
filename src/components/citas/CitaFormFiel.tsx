@@ -5,7 +5,6 @@ import {
   VStack,
   Text,
   useColorModeValue,
-  SimpleGrid,
   Divider,
   Flex,
 } from "@chakra-ui/react";
@@ -262,20 +261,66 @@ export default function CitaFormFields({
         </Flex>
 
         <VStack spacing={4} align="stretch">
-          <FormDateInput
-            w="full"
-            label="Fecha y hora"
-            name="fecha"
-            type="datetime-local"
-            value={formData.fecha}
-            onChange={onChange}
-            error={errors.fecha}
-            isRequired
-            _focus={{
-              borderColor: "brand.500",
-              boxShadow: "0 0 0 1px var(--chakra-colors-brand-500)",
-            }}
-          />
+          <HStack spacing={4} align="flex-start" flexWrap="wrap">
+            <FormDateInput
+              w="260px"
+              label="Fecha"
+              name="fecha"
+              type="date"
+              value={formData.fecha ? formData.fecha.split("T")[0] : ""}
+              onChange={(e) => {
+                // Mantener la hora si existe
+                const hora = formData.fecha?.split("T")[1] || "00:00";
+                const nuevaFecha = e.target.value
+                  ? `${e.target.value}T${hora}`
+                  : "";
+                onChange({
+                  target: {
+                    name: "fecha",
+                    value: nuevaFecha,
+                  },
+                });
+              }}
+              error={errors.fecha}
+              isRequired
+              _focus={{
+                borderColor: "brand.500",
+                boxShadow: "0 0 0 1px var(--chakra-colors-brand-500)",
+              }}
+            />
+            <FormInput
+              w="220px"
+              label="Hora"
+              name="hora"
+              type="time"
+              value={
+                formData.fecha
+                  ? formData.fecha.split("T")[1]?.slice(0, 5) || ""
+                  : ""
+              }
+              onChange={(e) => {
+                // Mantener la fecha si existe
+                const fecha = formData.fecha?.split("T")[0] || "";
+                const nuevaFecha =
+                  fecha && e.target.value ? `${fecha}T${e.target.value}` : "";
+                onChange({
+                  target: {
+                    name: "fecha",
+                    value: nuevaFecha,
+                  },
+                });
+              }}
+              error={errors.fecha}
+              isRequired
+              placeholder="HH:MM"
+              step="60"
+              inputMode="decimal"
+              _focus={{
+                borderColor: "brand.500",
+                boxShadow: "0 0 0 1px var(--chakra-colors-brand-500)",
+              }}
+            />
+          </HStack>
         </VStack>
       </Box>
 
@@ -352,9 +397,9 @@ export default function CitaFormFields({
           </Text>
         </Flex>
         {esTintado ? (
-          <>
+          <HStack spacing={4} align="flex-start" flexWrap="nowrap">
             <FormInput
-              label="Presupuesto Básico (€)"
+              label="Presupuesto Standar (€)"
               name="presupuestoBasico"
               type="number"
               min={0}
@@ -375,9 +420,11 @@ export default function CitaFormFields({
               placeholder="0.00"
               step="0.01"
               inputMode="decimal"
+              w="180px"
+              maxW="180px"
             />
             <FormInput
-              label="Presupuesto Intermedio (€)"
+              label="Presupuesto Pro (€)"
               name="presupuestoIntermedio"
               type="number"
               min={0}
@@ -398,6 +445,8 @@ export default function CitaFormFields({
               placeholder="0.00"
               step="0.01"
               inputMode="decimal"
+              w="180px"
+              maxW="180px"
             />
             <FormInput
               label="Presupuesto Premium (€)"
@@ -421,8 +470,10 @@ export default function CitaFormFields({
               placeholder="0.00"
               step="0.01"
               inputMode="decimal"
+              w="180px"
+              maxW="180px"
             />
-          </>
+          </HStack>
         ) : (
           <FormInput
             label="Presupuesto Máximo (€)"
