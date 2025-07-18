@@ -97,6 +97,7 @@ export interface Factura {
   total: number;
   clienteId: number;
   citaId: number;
+  numeroAnual: number;
 }
 
 export interface FacturaConItems extends Factura {
@@ -121,6 +122,7 @@ export interface Recibo {
   citaId: number;
   descripcion?: string;
   estado?: string;
+  numeroAnual: number;
 }
 
 export interface ReciboConItems extends Recibo {

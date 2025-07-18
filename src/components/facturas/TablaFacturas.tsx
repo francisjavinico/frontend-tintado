@@ -1,5 +1,6 @@
 import { FacturaConItems } from "@/types/types";
 import { ViewIcon } from "@chakra-ui/icons";
+import { EmailIcon } from "@chakra-ui/icons";
 import {
   Badge,
   IconButton,
@@ -18,6 +19,8 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { format } from "date-fns";
+import api from "@/api/client";
+import { useToast } from "@chakra-ui/react";
 
 interface Props {
   facturas: FacturaConItems[];
@@ -29,11 +32,31 @@ export default function TablaFacturas({ facturas, loading, onPreview }: Props) {
   const bgHover = useColorModeValue("gray.50", "gray.700");
   const borderColor = useColorModeValue("gray.200", "gray.700");
   const textColor = useColorModeValue("gray.600", "gray.300");
+  const toast = useToast();
 
   const getEstadoColor = () => {
     // Por ahora asumimos que todas las facturas están pagadas
     // En el futuro se puede agregar un campo estado a la factura
     return "green";
+  };
+
+  const handleReenviarEmail = async (facturaId: number) => {
+    try {
+      await api.post(`/facturas/${facturaId}/reenviar-email`);
+      toast({
+        title: "Factura enviada correctamente al cliente",
+        status: "success",
+        duration: 4000,
+        isClosable: true,
+      });
+    } catch {
+      toast({
+        title: "No se pudo enviar la factura",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    }
   };
 
   return (
@@ -113,7 +136,7 @@ export default function TablaFacturas({ facturas, loading, onPreview }: Props) {
             >
               <Td py={3} px={4}>
                 <Text fontWeight="500" fontSize="sm">
-                  #{factura.id}
+                  #{factura.numeroAnual}
                 </Text>
               </Td>
               <Td py={3} px={4}>
@@ -161,9 +184,12 @@ export default function TablaFacturas({ facturas, loading, onPreview }: Props) {
                 </Badge>
               </Td>
               <Td py={3} px={4} isNumeric>
-                <Tooltip label={`Ver factura #${factura.id}`} placement="top">
+                <Tooltip
+                  label={`Ver factura #${factura.numeroAnual}`}
+                  placement="top"
+                >
                   <IconButton
-                    aria-label={`Ver factura #${factura.id}`}
+                    aria-label={`Ver factura #${factura.numeroAnual}`}
                     icon={<ViewIcon />}
                     size="sm"
                     variant="ghost"
@@ -171,6 +197,39 @@ export default function TablaFacturas({ facturas, loading, onPreview }: Props) {
                     onClick={() => onPreview(factura)}
                     _hover={{ bg: "blue.50" }}
                   />
+                </Tooltip>
+                <Tooltip
+                  label={
+                    factura.cliente?.nombre &&
+                    factura.cliente?.apellido &&
+                    factura.cliente?.email &&
+                    factura.cliente?.documentoIdentidad &&
+                    factura.cliente?.direccion
+                      ? "Reenviar por email"
+                      : "Faltan datos del cliente"
+                  }
+                  placement="top"
+                >
+                  <span>
+                    <IconButton
+                      aria-label={`Reenviar factura #${factura.numeroAnual} por email`}
+                      icon={<EmailIcon />}
+                      size="sm"
+                      variant="ghost"
+                      colorScheme="teal"
+                      isDisabled={
+                        !(
+                          factura.cliente?.nombre &&
+                          factura.cliente?.apellido &&
+                          factura.cliente?.email &&
+                          factura.cliente?.documentoIdentidad &&
+                          factura.cliente?.direccion
+                        )
+                      }
+                      onClick={() => handleReenviarEmail(factura.id)}
+                      _hover={{ bg: "teal.50" }}
+                    />
+                  </span>
                 </Tooltip>
               </Td>
             </Tr>

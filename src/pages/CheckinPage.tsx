@@ -26,6 +26,15 @@ const emptyClient = {
   consentimientoLOPD: false,
   aceptaPromociones: false, // <-- Nuevo campo
 };
+
+function normalizaTelefono(tel: string) {
+  let t = tel.replace(/\s+/g, "").replace(/-/g, "");
+  if (t.startsWith("0034")) t = "+34" + t.slice(4);
+  if (t.startsWith("34") && t.length === 11) t = "+34" + t.slice(2);
+  if (!t.startsWith("+34") && t.length === 9) t = "+34" + t;
+  return t;
+}
+
 export default function CheckinTabletPage() {
   const { id } = useParams();
   const toast = useToast();
@@ -38,7 +47,10 @@ export default function CheckinTabletPage() {
 
   useEffect(() => {
     if (telefonoQuery) {
-      setFormData((prev) => ({ ...prev, telefono: telefonoQuery }));
+      setFormData((prev) => ({
+        ...prev,
+        telefono: normalizaTelefono(telefonoQuery),
+      }));
     }
   }, [telefonoQuery]);
 
@@ -64,7 +76,12 @@ export default function CheckinTabletPage() {
       setShowLopdError(true);
       return;
     }
-    const parsed = clientSchema.safeParse(formData);
+    // Normaliza antes de validar y enviar
+    const formDataNormalizado = {
+      ...formData,
+      telefono: normalizaTelefono(formData.telefono),
+    };
+    const parsed = clientSchema.safeParse(formDataNormalizado);
     if (!parsed.success) {
       const newErrors: Record<string, string> = {};
       parsed.error.errors.forEach((err) => {
@@ -81,7 +98,7 @@ export default function CheckinTabletPage() {
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(formDataNormalizado),
         }
       );
       if (!res.ok) {

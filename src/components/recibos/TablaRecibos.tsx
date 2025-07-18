@@ -1,6 +1,7 @@
 import { ReciboConItems } from "@/types/types";
 import { ViewIcon } from "@chakra-ui/icons";
 import { AddIcon } from "@chakra-ui/icons";
+import { EmailIcon } from "@chakra-ui/icons";
 import {
   IconButton,
   Spinner,
@@ -19,6 +20,8 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { format } from "date-fns";
+import api from "@/api/client";
+import { useToast } from "@chakra-ui/react";
 
 interface Props {
   recibos: ReciboConItems[];
@@ -36,6 +39,26 @@ export default function TablaRecibos({
   const bgHover = useColorModeValue("gray.50", "gray.700");
   const borderColor = useColorModeValue("gray.200", "gray.700");
   const textColor = useColorModeValue("gray.600", "gray.300");
+  const toast = useToast();
+
+  const handleReenviarEmail = async (reciboId: number) => {
+    try {
+      await api.post(`/recibos/${reciboId}/reenviar-email`);
+      toast({
+        title: "Recibo enviado correctamente al cliente",
+        status: "success",
+        duration: 4000,
+        isClosable: true,
+      });
+    } catch {
+      toast({
+        title: "No se pudo enviar el recibo",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    }
+  };
 
   return (
     <TableContainer>
@@ -87,7 +110,7 @@ export default function TablaRecibos({
             >
               <Td py={3} px={4}>
                 <Text fontWeight="500" fontSize="sm">
-                  #{recibo.id}
+                  #{recibo.numeroAnual}
                 </Text>
               </Td>
               <Td py={3} px={4}>
@@ -124,9 +147,12 @@ export default function TablaRecibos({
               </Td>
               <Td py={3} px={4} isNumeric>
                 <HStack spacing={1} justify="flex-end">
-                  <Tooltip label={`Ver recibo #${recibo.id}`} placement="top">
+                  <Tooltip
+                    label={`Ver recibo #${recibo.numeroAnual}`}
+                    placement="top"
+                  >
                     <IconButton
-                      aria-label={`Ver recibo #${recibo.id}`}
+                      aria-label={`Ver recibo #${recibo.numeroAnual}`}
                       icon={<ViewIcon />}
                       size="sm"
                       variant="ghost"
@@ -135,14 +161,46 @@ export default function TablaRecibos({
                       _hover={{ bg: "blue.50" }}
                     />
                   </Tooltip>
-
+                  <Tooltip
+                    label={
+                      recibo.cliente?.nombre &&
+                      recibo.cliente?.apellido &&
+                      recibo.cliente?.email &&
+                      recibo.cliente?.documentoIdentidad &&
+                      recibo.cliente?.direccion
+                        ? "Reenviar por email"
+                        : "Faltan datos del cliente"
+                    }
+                    placement="top"
+                  >
+                    <span>
+                      <IconButton
+                        aria-label={`Reenviar recibo #${recibo.numeroAnual} por email`}
+                        icon={<EmailIcon />}
+                        size="sm"
+                        variant="ghost"
+                        colorScheme="teal"
+                        isDisabled={
+                          !(
+                            recibo.cliente?.nombre &&
+                            recibo.cliente?.apellido &&
+                            recibo.cliente?.email &&
+                            recibo.cliente?.documentoIdentidad &&
+                            recibo.cliente?.direccion
+                          )
+                        }
+                        onClick={() => handleReenviarEmail(recibo.id)}
+                        _hover={{ bg: "teal.50" }}
+                      />
+                    </span>
+                  </Tooltip>
                   {recibo.estado !== "convertido" && (
                     <Tooltip
-                      label={`Convertir recibo #${recibo.id} a factura`}
+                      label={`Convertir recibo #${recibo.numeroAnual} a factura`}
                       placement="top"
                     >
                       <IconButton
-                        aria-label={`Convertir recibo #${recibo.id} a factura`}
+                        aria-label={`Convertir recibo #${recibo.numeroAnual} a factura`}
                         icon={<AddIcon />}
                         size="sm"
                         variant="ghost"

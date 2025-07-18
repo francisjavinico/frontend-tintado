@@ -129,10 +129,14 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
   // UI para agregar servicios
   const [servicioSeleccionado, setServicioSeleccionado] = useState<string>("");
   const [precioServicio, setPrecioServicio] = useState<string>("");
+  const [descripcionOtro, setDescripcionOtro] = useState<string>("");
 
   // Lógica para precargar el valor intermedio si el servicio es Tintado de Lunas
   const handleServicioSeleccionado = (servicio: string) => {
     setServicioSeleccionado(servicio);
+    if (servicio !== "Otros") {
+      setDescripcionOtro("");
+    }
     // Solo precargar si el usuario no ha escrito nada aún
     if (
       servicio === "Tintado de Lunas" &&
@@ -147,13 +151,29 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
 
   const handleAgregarServicio = () => {
     if (!servicioSeleccionado) return;
+    let descripcionFinal = servicioSeleccionado;
+    if (servicioSeleccionado === "Otros") {
+      if (!descripcionOtro.trim()) {
+        toast({
+          title: "Descripción requerida",
+          description:
+            "Debes escribir una descripción para el servicio 'Otros'.",
+          status: "warning",
+          duration: 4000,
+          isClosable: true,
+        });
+        return;
+      }
+      descripcionFinal = descripcionOtro.trim();
+    }
     append({
-      descripcion: servicioSeleccionado,
+      descripcion: descripcionFinal,
       cantidad: 1,
       precioUnit: parseFloat(precioServicio) || 0,
     });
     setServicioSeleccionado("");
     setPrecioServicio("");
+    setDescripcionOtro("");
   };
 
   // Estado local para edición fluida de precios en servicios precargados
@@ -432,6 +452,15 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
                     </option>
                   ))}
                 </Select>
+                {servicioSeleccionado === "Otros" && (
+                  <Input
+                    placeholder="Especificar servicio"
+                    value={descripcionOtro}
+                    onChange={(e) => setDescripcionOtro(e.target.value)}
+                    size="sm"
+                    w="180px"
+                  />
+                )}
                 <Input
                   placeholder="Precio (€)"
                   value={precioServicio}
@@ -470,24 +499,29 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
             </FormControl>
             {/* Mostrar tipo de lámina solo si es Tintado de Lunas */}
             {esTintadoLunas && (
-              <HStack justify="space-between">
-                <Text fontSize="sm" color="gray.600">
-                  Tipo de lámina:
-                </Text>
-                <Select
-                  placeholder="Selecciona tipo de lámina"
-                  {...register("tipoLamina")}
-                  size="sm"
-                  w="220px"
-                  isRequired={esTintadoLunas}
-                >
-                  {opcionesLaminas.map((op) => (
-                    <option key={op.value} value={op.value}>
-                      {op.label}
-                    </option>
-                  ))}
-                </Select>
-              </HStack>
+              <FormControl isInvalid={!!errors.tipoLamina} mt={2}>
+                <HStack justify="space-between">
+                  <Text fontSize="sm" color="gray.600">
+                    Tipo de lámina:
+                  </Text>
+                  <Select
+                    placeholder="Selecciona tipo de lámina"
+                    {...register("tipoLamina")}
+                    size="sm"
+                    w="220px"
+                    isRequired={esTintadoLunas}
+                  >
+                    {opcionesLaminas.map((op) => (
+                      <option key={op.value} value={op.value}>
+                        {op.label}
+                      </option>
+                    ))}
+                  </Select>
+                </HStack>
+                <FormErrorMessage>
+                  {errors.tipoLamina?.message}
+                </FormErrorMessage>
+              </FormControl>
             )}
           </VStack>
         </ModalBody>

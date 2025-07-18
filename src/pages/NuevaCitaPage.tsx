@@ -9,6 +9,14 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { FiPlus } from "react-icons/fi";
 
+function normalizaTelefono(tel: string) {
+  let t = tel.replace(/\s+/g, "").replace(/-/g, "");
+  if (t.startsWith("0034")) t = "+34" + t.slice(4);
+  if (t.startsWith("34") && t.length === 11) t = "+34" + t.slice(2);
+  if (!t.startsWith("+34") && t.length === 9) t = "+34" + t;
+  return t;
+}
+
 export default function NuevaCitaPage() {
   const toast = useToast();
   const navigate = useNavigate();
@@ -128,8 +136,9 @@ export default function NuevaCitaPage() {
 
     // Lógica para buscar cliente por teléfono
     if (name === "telefono" && typeof value === "string") {
+      const telefonoNormalizado = normalizaTelefono(value);
       const clienteEncontrado = clients.find(
-        (c) => c.telefono === value.trim()
+        (c) => normalizaTelefono(c.telefono) === telefonoNormalizado
       );
       if (clienteEncontrado) {
         setClienteIdEncontrado(clienteEncontrado.id);

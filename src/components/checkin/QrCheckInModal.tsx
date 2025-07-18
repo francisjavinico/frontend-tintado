@@ -21,7 +21,7 @@ interface Props {
 }
 
 const QrCheckinModal = ({ isOpen, onClose, citaId, telefono }: Props) => {
-  const link = `${window.location.origin}/checkin/${citaId}?telefono=${telefono}`;
+  const link = `${window.location.origin}/checkin/${citaId}?telefono=${encodeURIComponent(telefono)}`;
 
   const { onCopy, hasCopied } = useClipboard(link);
 
