@@ -97,6 +97,7 @@ export const useVehiculoStore = create<VehiculoState>((set, get) => ({
   },
 
   addVehiculo: async (vehiculo) => {
+    console.log("[addVehiculo] Enviando:", vehiculo);
     try {
       const { data } = await api.post<Vehiculo>("/vehiculos", vehiculo);
       set({ vehiculos: [...get().vehiculos, data] });

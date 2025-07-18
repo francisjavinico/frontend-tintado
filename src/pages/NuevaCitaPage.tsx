@@ -200,33 +200,54 @@ export default function NuevaCitaPage() {
         toast({
           title: "Presupuestos requeridos",
           description:
-            "Debes ingresar los tres presupuestos para Tintado de Lunas.",
+            "Debes ingresar los tres presupuestos para Tintado de Lunas y deben ser números válidos.",
           status: "warning",
           duration: 4000,
           isClosable: true,
         });
+        setErrors((prev) => ({
+          ...prev,
+          presupuestoBasico: isNaN(basico)
+            ? "Introduce un número válido para Standar"
+            : "",
+          presupuestoIntermedio: isNaN(intermedio)
+            ? "Introduce un número válido para Pro"
+            : "",
+          presupuestoPremium: isNaN(premium)
+            ? "Introduce un número válido para Premium"
+            : "",
+        }));
         return;
       }
       if (!(intermedio > basico)) {
         toast({
-          title: "Presupuesto intermedio incorrecto",
-          description:
-            "El presupuesto intermedio debe ser mayor que el básico.",
+          title: "Presupuesto Pro incorrecto",
+          description: "El presupuesto Pro debe ser mayor que el Standar.",
           status: "warning",
           duration: 4000,
           isClosable: true,
         });
+        setErrors((prev) => ({
+          ...prev,
+          presupuestoIntermedio:
+            "El presupuesto Pro debe ser mayor que el Standar.",
+        }));
         return;
       }
       if (!(premium > intermedio && premium > basico)) {
         toast({
-          title: "Presupuesto premium incorrecto",
+          title: "Presupuesto Premium incorrecto",
           description:
-            "El presupuesto premium debe ser mayor que el básico y el intermedio.",
+            "El presupuesto Premium debe ser mayor que el Standar y el Pro.",
           status: "warning",
           duration: 4000,
           isClosable: true,
         });
+        setErrors((prev) => ({
+          ...prev,
+          presupuestoPremium:
+            "El presupuesto Premium debe ser mayor que el Standar y el Pro.",
+        }));
         return;
       }
     }

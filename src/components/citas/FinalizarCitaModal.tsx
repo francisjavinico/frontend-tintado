@@ -53,6 +53,8 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
     watch,
     formState: { errors },
     setError,
+    trigger,
+    setValue,
   } = useForm<FinalizarCitaInput>({
     resolver: zodResolver(finalizarCitaSchema),
     defaultValues: {
@@ -89,6 +91,7 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
             ],
       generarFactura: false,
       matricula: cita.matricula || "",
+      tipoLamina: "Nanoceramica", // Por defecto intermedia
     },
   });
 
@@ -149,6 +152,14 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
     }
   };
 
+  // Nombres personalizados para presupuestos
+  const NOMBRE_BASICO = "Standar";
+  const NOMBRE_INTERMEDIO = "Pro";
+  const NOMBRE_PREMIUM = "Premium";
+
+  // Estado para error inline al agregar servicio
+  const [errorAgregarServicio, setErrorAgregarServicio] = useState<string>("");
+
   const handleAgregarServicio = () => {
     if (!servicioSeleccionado) return;
     let descripcionFinal = servicioSeleccionado;
@@ -166,6 +177,11 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
       }
       descripcionFinal = descripcionOtro.trim();
     }
+    if (!precioServicio || parseFloat(precioServicio) <= 0) {
+      setErrorAgregarServicio("El precio debe ser mayor que 0");
+      return;
+    }
+    setErrorAgregarServicio("");
     append({
       descripcion: descripcionFinal,
       cantidad: 1,
@@ -179,7 +195,37 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
   // Estado local para edición fluida de precios en servicios precargados
   const [preciosTemp, setPreciosTemp] = useState<{ [idx: number]: string }>({});
 
+  // Nuevo: actualizar precio de Tintado de Lunas según tipo de lámina
+  const handleTipoLaminaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const tipo = e.target.value;
+    setValue("tipoLamina", tipo); // Sincronizar con React Hook Form
+    // Actualizar el precio del servicio Tintado de Lunas
+    const idx = fields.findIndex(
+      (item) => item.descripcion === "Tintado de Lunas"
+    );
+    if (idx !== -1) {
+      let nuevoPrecio = 0;
+      if (tipo === "Poliester" && typeof cita.presupuestoBasico === "number") {
+        nuevoPrecio = cita.presupuestoBasico;
+      } else if (
+        tipo === "Nanoceramica" &&
+        typeof cita.presupuestoIntermedio === "number"
+      ) {
+        nuevoPrecio = cita.presupuestoIntermedio;
+      } else if (
+        tipo === "NanoCarbon" &&
+        typeof cita.presupuestoPremium === "number"
+      ) {
+        nuevoPrecio = cita.presupuestoPremium;
+      }
+      update(idx, { ...fields[idx], precioUnit: nuevoPrecio });
+    }
+  };
+
   const submit = async (values: FinalizarCitaInput) => {
+    // Forzar validación visual de matrícula
+    const valid = await trigger("matricula");
+    if (!valid) return;
     if (!values.matricula || values.matricula.trim() === "") {
       setError("matricula", {
         type: "manual",
@@ -301,22 +347,18 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
                 <Text fontSize="sm" color="gray.600">
                   Matrícula:
                 </Text>
-                {faltaMatricula ? (
-                  <FormControl isInvalid={!!errors.matricula} maxW="180px">
-                    <Input
-                      size="sm"
-                      placeholder="Introduce la matrícula"
-                      {...register("matricula", { required: true })}
-                    />
-                    <FormErrorMessage>
-                      {errors.matricula?.message}
-                    </FormErrorMessage>
-                  </FormControl>
-                ) : (
-                  <Text fontSize="sm" fontWeight="500">
-                    {cita.matricula}
-                  </Text>
-                )}
+                <FormControl isInvalid={!!errors.matricula} maxW="180px">
+                  <Input
+                    size="sm"
+                    placeholder="Introduce la matrícula"
+                    {...register("matricula", {
+                      required: "La matrícula es obligatoria",
+                    })}
+                  />
+                  <FormErrorMessage>
+                    {errors.matricula?.message}
+                  </FormErrorMessage>
+                </FormControl>
               </HStack>
             </VStack>
 
@@ -338,44 +380,26 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
                 </Text>
                 {typeof cita.presupuestoBasico === "number" && (
                   <Text fontSize="sm">
-                    Básico: <b>{cita.presupuestoBasico.toFixed(2)} €</b>
+                    Presupuesto {NOMBRE_BASICO}:{" "}
+                    <b>{cita.presupuestoBasico.toFixed(2)} €</b>
                   </Text>
                 )}
                 {typeof cita.presupuestoIntermedio === "number" && (
                   <Text fontSize="sm">
-                    Intermedio: <b>{cita.presupuestoIntermedio.toFixed(2)} €</b>
+                    Presupuesto {NOMBRE_INTERMEDIO}:{" "}
+                    <b>{cita.presupuestoIntermedio.toFixed(2)} €</b>
                   </Text>
                 )}
                 {typeof cita.presupuestoPremium === "number" && (
                   <Text fontSize="sm">
-                    Premium: <b>{cita.presupuestoPremium.toFixed(2)} €</b>
+                    Presupuesto {NOMBRE_PREMIUM}:{" "}
+                    <b>{cita.presupuestoPremium.toFixed(2)} €</b>
                   </Text>
                 )}
               </Box>
             )}
 
-            {(!cita.cliente?.documentoIdentidad ||
-              !cita.cliente?.direccion ||
-              !cita.matricula) && (
-              <Box
-                mt={3}
-                p={3}
-                bg="orange.50"
-                borderRadius="md"
-                border="1px solid"
-                borderColor="orange.200"
-              >
-                <Text fontSize="sm" color="orange.700" fontWeight="500">
-                  ⚠️ Datos faltantes para facturación completa
-                </Text>
-                <Text fontSize="xs" color="orange.600" mt={1}>
-                  {!cita.cliente?.documentoIdentidad &&
-                    "• DNI/NIE del cliente "}
-                  {!cita.cliente?.direccion && "• Dirección completa "}
-                  {!cita.matricula && "• Matrícula del vehículo "}
-                </Text>
-              </Box>
-            )}
+            {/* Eliminar cualquier advertencia general de datos faltantes para facturación completa */}
           </Box>
 
           <VStack spacing={4} align="stretch">
@@ -393,8 +417,28 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
                       : item.precioUnit !== undefined
                         ? String(item.precioUnit)
                         : "";
+                  const esTintadoLamina =
+                    item.descripcion === "Tintado de Lunas";
                   return (
                     <HStack key={item.id} align="center">
+                      {/* Si es Tintado de Lunas, mostrar el select de tipo de lámina a la izquierda del precio */}
+                      {esTintadoLamina && (
+                        <Select
+                          placeholder="Tipo de lámina"
+                          {...register("tipoLamina")}
+                          size="sm"
+                          w="150px"
+                          isRequired
+                          onChange={handleTipoLaminaChange}
+                          value={watch("tipoLamina")}
+                        >
+                          {opcionesLaminas.map((op) => (
+                            <option key={op.value} value={op.value}>
+                              {op.label}
+                            </option>
+                          ))}
+                        </Select>
+                      )}
                       <Input
                         value={tempValue}
                         onChange={(e) => {
@@ -438,7 +482,7 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
                   );
                 })}
               </VStack>
-              <HStack mt={2}>
+              <HStack mt={2} align="flex-start">
                 <Select
                   placeholder="Selecciona servicio"
                   value={servicioSeleccionado}
@@ -479,6 +523,11 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
                   Agregar
                 </Button>
               </HStack>
+              {errorAgregarServicio && (
+                <Text color="red.500" fontSize="sm" mt={1}>
+                  {errorAgregarServicio}
+                </Text>
+              )}
             </Box>
 
             <Box fontWeight="bold" textAlign="right" w="100%">
@@ -497,8 +546,8 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
                 ¿Desea generar también la factura?
               </Checkbox>
             </FormControl>
-            {/* Mostrar tipo de lámina solo si es Tintado de Lunas */}
-            {esTintadoLunas && (
+            {/* Eliminar el select de tipo de lámina de la sección inferior */}
+            {/* {esTintadoLunas && (
               <FormControl isInvalid={!!errors.tipoLamina} mt={2}>
                 <HStack justify="space-between">
                   <Text fontSize="sm" color="gray.600">
@@ -510,6 +559,8 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
                     size="sm"
                     w="220px"
                     isRequired={esTintadoLunas}
+                    onChange={handleTipoLaminaChange}
+                    value={watch("tipoLamina")}
                   >
                     {opcionesLaminas.map((op) => (
                       <option key={op.value} value={op.value}>
@@ -522,7 +573,7 @@ export default function FinalizarCitaModal({ isOpen, onClose, cita }: Props) {
                   {errors.tipoLamina?.message}
                 </FormErrorMessage>
               </FormControl>
-            )}
+            )} */}
           </VStack>
         </ModalBody>
 

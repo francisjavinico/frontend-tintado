@@ -80,6 +80,7 @@ export default function CitasPage() {
     setShowQrModal(false);
     setCitaIdParaQr(null);
     setTelefonoQr("");
+    fetchCitas(); // Actualiza la lista de citas al cerrar el modal QR
   };
 
   const [selectedCita, setSelectedCita] = useState<CitaConRelaciones | null>(

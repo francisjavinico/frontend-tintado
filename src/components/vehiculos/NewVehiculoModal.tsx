@@ -106,6 +106,7 @@ export default function NewVehiculoModal({
   };
 
   const handleSubmit = async () => {
+    console.log("[NewVehiculoModal] handleSubmit llamado");
     if (!validateForm()) {
       return;
     }
@@ -136,6 +137,16 @@ export default function NewVehiculoModal({
         año: form.año,
         numeroPuertas: form.numeroPuertas,
       });
+      if (!nuevo) {
+        toast({
+          title: "Ya existe un vehículo con esos datos",
+          status: "error",
+          duration: 4000,
+          isClosable: true,
+        });
+        setLoading(false);
+        return;
+      }
       toast({
         title: "Vehículo creado exitosamente",
         status: "success",
@@ -146,12 +157,27 @@ export default function NewVehiculoModal({
       if (nuevo && typeof onVehiculoCreado === "function") {
         onVehiculoCreado(nuevo);
       }
-    } catch {
-      toast({
-        title: "Error al crear el vehículo",
-        status: "error",
-        description: "Por favor, intenta nuevamente",
-      });
+    } catch (error) {
+      // Si el error es 409, mostrar mensaje específico
+      if (
+        error &&
+        typeof error === "object" &&
+        "response" in error &&
+        error.response?.status === 409
+      ) {
+        toast({
+          title: "Ya existe un vehículo con esos datos",
+          status: "error",
+          duration: 4000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Error al crear el vehículo",
+          status: "error",
+          description: "Por favor, intenta nuevamente",
+        });
+      }
     } finally {
       setLoading(false);
     }

@@ -112,8 +112,20 @@ const VehicleAutocomplete: React.FC<VehicleAutocompleteProps> = ({
   };
 
   // Añadir nuevo vehículo y seleccionarlo
-  const handleAddVehiculo = async (vehiculo: Omit<Vehiculo, "id">) => {
-    const nuevo = await addVehiculo(vehiculo);
+  const handleAddVehiculo = async (vehiculo: Vehiculo) => {
+    // Si el vehículo ya tiene id, solo seleccionarlo, NO volver a crearlo
+    if (vehiculo.id) {
+      setShowList(false);
+      setInput("");
+      fetchVehiculos({ search: "", page: 1 });
+      setSelected(vehiculo.id);
+      onChange({ target: { name: "vehiculoId", value: vehiculo.id } });
+      onClose();
+      return;
+    }
+    // Si no tiene id, crearlo
+    const { marca, modelo, año, numeroPuertas } = vehiculo;
+    const nuevo = await addVehiculo({ marca, modelo, año, numeroPuertas });
     if (nuevo) {
       setShowList(false);
       setInput("");

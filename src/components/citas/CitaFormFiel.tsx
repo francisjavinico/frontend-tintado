@@ -403,13 +403,13 @@ export default function CitaFormFields({
               name="presupuestoBasico"
               type="number"
               min={0}
-              value={formData.presupuestoBasico || ""}
+              value={formData.presupuestoBasico ?? ""}
               onChange={(e) =>
                 onChange({
                   target: {
                     name: "presupuestoBasico",
                     value:
-                      e.target.value === ""
+                      e.target.value === "" || e.target.value === undefined
                         ? undefined
                         : Number(e.target.value),
                   },
@@ -428,13 +428,13 @@ export default function CitaFormFields({
               name="presupuestoIntermedio"
               type="number"
               min={0}
-              value={formData.presupuestoIntermedio || ""}
+              value={formData.presupuestoIntermedio ?? ""}
               onChange={(e) =>
                 onChange({
                   target: {
                     name: "presupuestoIntermedio",
                     value:
-                      e.target.value === ""
+                      e.target.value === "" || e.target.value === undefined
                         ? undefined
                         : Number(e.target.value),
                   },
@@ -453,13 +453,13 @@ export default function CitaFormFields({
               name="presupuestoPremium"
               type="number"
               min={0}
-              value={formData.presupuestoPremium || ""}
+              value={formData.presupuestoPremium ?? ""}
               onChange={(e) =>
                 onChange({
                   target: {
                     name: "presupuestoPremium",
                     value:
-                      e.target.value === ""
+                      e.target.value === "" || e.target.value === undefined
                         ? undefined
                         : Number(e.target.value),
                   },
