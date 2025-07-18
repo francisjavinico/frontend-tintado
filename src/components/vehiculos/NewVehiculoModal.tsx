@@ -22,6 +22,7 @@ import {
 import { useState, useRef } from "react";
 import { useVehiculoStore } from "../../stores/useVehiculoStore";
 import { Vehiculo } from "@/types/types";
+import axios from "axios";
 
 interface Props {
   isOpen: boolean;
@@ -158,13 +159,7 @@ export default function NewVehiculoModal({
         onVehiculoCreado(nuevo);
       }
     } catch (error) {
-      // Si el error es 409, mostrar mensaje específico
-      if (
-        error &&
-        typeof error === "object" &&
-        "response" in error &&
-        error.response?.status === 409
-      ) {
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
         toast({
           title: "Ya existe un vehículo con esos datos",
           status: "error",
@@ -173,12 +168,12 @@ export default function NewVehiculoModal({
         });
       } else {
         toast({
-          title: "Error al crear el vehículo",
+          title: "Error al crear vehículo",
           status: "error",
-          description: "Por favor, intenta nuevamente",
+          duration: 4000,
+          isClosable: true,
         });
       }
-    } finally {
       setLoading(false);
     }
   };
