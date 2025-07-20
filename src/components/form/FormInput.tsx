@@ -6,6 +6,7 @@ import {
 } from "@chakra-ui/react";
 import { UseFormRegister, FieldValues, Path } from "react-hook-form";
 import React from "react";
+import { FormHelperText } from "@chakra-ui/react";
 
 interface FormInputProps<T extends FieldValues> {
   label: string;
@@ -34,13 +35,13 @@ function FormInput<T extends FieldValues>({
   isRequired = false,
   value,
   onChange,
+  helperText,
   ...rest
-}: FormInputProps<T>) {
-  const inputProps = {
-    ...(register ? { ...register(name as Path<T>) } : {}),
-    value,
-    onChange,
-  };
+}: FormInputProps<T> & { helperText?: string }) {
+  // Si se pasa register, no pasar value ni onChange
+  const inputProps = register
+    ? { ...register(name as Path<T>) }
+    : { value, onChange };
 
   return (
     <FormControl
@@ -56,8 +57,11 @@ function FormInput<T extends FieldValues>({
         type={type}
         placeholder={placeholder}
         {...inputProps}
-        {...rest}
+        {...Object.fromEntries(
+          Object.entries(rest).filter(([k]) => k !== "helperText")
+        )}
       />
+      {helperText && <FormHelperText>{helperText}</FormHelperText>}
       <FormErrorMessage>{error}</FormErrorMessage>
     </FormControl>
   );

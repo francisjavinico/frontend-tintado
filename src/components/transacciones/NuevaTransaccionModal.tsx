@@ -63,7 +63,7 @@ export default function NuevaTransaccionModal({ isOpen, onClose }: Props) {
     resolver: zodResolver(schema),
     defaultValues: {
       tipo: "ingreso",
-      fecha: new Date().toISOString(), // Usar fecha y hora actual
+      fecha: new Date().toISOString().slice(0, 10), // Solo YYYY-MM-DD
     },
   });
 
@@ -125,6 +125,7 @@ export default function NuevaTransaccionModal({ isOpen, onClose }: Props) {
                 { value: "ingreso", label: "Ingreso" },
                 { value: "gasto", label: "Gasto" },
               ]}
+              value={watch("tipo") ?? ""}
               register={register}
               error={errors.tipo?.message}
               isRequired

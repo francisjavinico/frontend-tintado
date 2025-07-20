@@ -258,19 +258,22 @@ export default function TablaUltimasTransacciones() {
           </Flex>
         </Box>
       )}
-      {transaccionSeleccionada && (
-        <>
-          <EditarTransaccionModal
-            isOpen={isEditOpen}
-            onClose={() => setIsEditOpen(false)}
-            transaccion={transaccionSeleccionada}
-          />
-          <ConfirmarEliminarDialog
-            isOpen={isDeleteOpen}
-            onClose={() => setIsDeleteOpen(false)}
-            transaccion={transaccionSeleccionada}
-          />
-        </>
+      {isEditOpen && transaccionSeleccionada && (
+        <EditarTransaccionModal
+          isOpen={isEditOpen}
+          onClose={() => {
+            setTransaccionSeleccionada(null);
+            setTimeout(() => setIsEditOpen(false), 0);
+          }}
+          transaccion={transaccionSeleccionada}
+        />
+      )}
+      {isDeleteOpen && transaccionSeleccionada && (
+        <ConfirmarEliminarDialog
+          isOpen={isDeleteOpen}
+          onClose={() => setIsDeleteOpen(false)}
+          transaccion={transaccionSeleccionada}
+        />
       )}
     </TableContainer>
   );

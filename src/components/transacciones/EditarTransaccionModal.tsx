@@ -16,6 +16,7 @@ import { useTransaccionesStore } from "@/stores/useTransaccionesStore";
 import FormInput from "../form/FormInput";
 import FormSelect from "../form/FormSelect";
 import FormActions from "../form/FormActions";
+import { useEffect } from "react";
 
 const schema = z
   .object({
@@ -63,13 +64,29 @@ export default function EditarTransaccionModal({
     handleSubmit,
     formState: { errors, isSubmitting },
     watch,
+    reset,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      ...transaccion,
-      fecha: transaccion.fecha.split("T")[0], // Solo la fecha para el input
+      tipo: transaccion.tipo ?? "ingreso",
+      categoria: transaccion.categoria ?? "",
+      descripcion: transaccion.descripcion ?? "",
+      monto: transaccion.monto ?? "",
+      fecha: transaccion.fecha ? transaccion.fecha.split("T")[0] : "",
+      numeroFacturaGasto: transaccion.numeroFacturaGasto ?? "",
     },
   });
+
+  useEffect(() => {
+    reset({
+      tipo: transaccion.tipo ?? "ingreso",
+      categoria: transaccion.categoria ?? "",
+      descripcion: transaccion.descripcion ?? "",
+      monto: transaccion.monto ?? "",
+      fecha: transaccion.fecha ? transaccion.fecha.split("T")[0] : "",
+      numeroFacturaGasto: transaccion.numeroFacturaGasto ?? "",
+    });
+  }, [transaccion, isOpen, reset]);
 
   const tipoSeleccionado = watch("tipo");
 
