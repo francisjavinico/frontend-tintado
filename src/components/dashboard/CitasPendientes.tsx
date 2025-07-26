@@ -29,7 +29,8 @@ import { useCitasStore } from "@/stores/useCitaStore";
 import { format } from "date-fns";
 import { CitaConRelaciones } from "@/types/types";
 import FinalizarCitaModal from "@/components/citas/FinalizarCitaModal";
-import { FiClock, FiXCircle } from "react-icons/fi";
+import { FiClock, FiXCircle, FiSmartphone } from "react-icons/fi";
+import QrCheckinModal from "@/components/checkin/QrCheckInModal";
 
 export default function CitasPendientes() {
   const { fetchCitasHoy, citasHoy, loading } = useCitasStore();
@@ -47,6 +48,7 @@ export default function CitasPendientes() {
     null
   );
   const [isCancelarOpen, setIsCancelarOpen] = useState(false);
+  const [qrCita, setQrCita] = useState<CitaConRelaciones | null>(null);
 
   useEffect(() => {
     fetchCitasHoy();
@@ -244,6 +246,7 @@ export default function CitasPendientes() {
                         _hover={{ bg: "brand.50", transform: "scale(1.05)" }}
                         transition="all 0.2s ease"
                         fontSize="md"
+                        isDisabled={!cita.cliente}
                       >
                         <Text fontWeight="bold" fontSize="md">
                           Finalizar
@@ -285,6 +288,26 @@ export default function CitasPendientes() {
                           <FiXCircle size={15} />
                         </Button>
                       </Tooltip>
+                      {!cita.cliente && (
+                        <Tooltip label="Generar QR para check-in" hasArrow>
+                          <Button
+                            size="xs"
+                            colorScheme="purple"
+                            variant="ghost"
+                            leftIcon={undefined}
+                            onClick={() => setQrCita(cita)}
+                            _hover={{
+                              bg: "purple.50",
+                              transform: "scale(1.05)",
+                            }}
+                            transition="all 0.2s ease"
+                            aria-label="QR"
+                            fontSize="2xl"
+                          >
+                            <FiSmartphone size={15} />
+                          </Button>
+                        </Tooltip>
+                      )}
                     </HStack>
                   </Td>
                 </Tr>
@@ -388,6 +411,15 @@ export default function CitasPendientes() {
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      {qrCita && (
+        <QrCheckinModal
+          isOpen={!!qrCita}
+          onClose={() => setQrCita(null)}
+          citaId={qrCita.id}
+          telefono={qrCita.telefono}
+        />
+      )}
     </Box>
   );
 }

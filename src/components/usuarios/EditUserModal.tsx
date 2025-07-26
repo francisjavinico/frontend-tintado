@@ -1,4 +1,4 @@
-import { updateUserSchema } from "@/schemas/userSchema";
+import { updateUserSchema, userSchema } from "@/schemas/userSchema";
 import { User } from "@/types/types";
 import {
   Modal,
@@ -85,7 +85,9 @@ export default function EditUserModal({
   const handleSubmit = async () => {
     setIsSubmitting(true);
 
-    const result = updateUserSchema.safeParse(form);
+    // Usar el esquema correcto según si es creación o edición
+    const schema = user ? updateUserSchema : userSchema;
+    const result = schema.safeParse(form);
 
     if (!result.success) {
       const zodErrors: { [key: string]: string } = {};
@@ -110,7 +112,10 @@ export default function EditUserModal({
     }
 
     const userToSave = { ...form };
-    if (!userToSave.password) delete userToSave.password;
+    // Solo eliminar password si es edición y está vacío
+    if (user && !userToSave.password) {
+      delete userToSave.password;
+    }
 
     try {
       await onSave(userToSave);
@@ -269,19 +274,19 @@ export default function EditUserModal({
               </FormErrorMessage>
             </FormControl>
 
-            <FormControl isInvalid={!!errors.password}>
+            <FormControl isInvalid={!!errors.password} isRequired={!user}>
               <FormLabel
                 fontSize="sm"
                 fontWeight="500"
                 color={textColor}
                 mb={2}
               >
-                Contraseña {form?.id ? "(opcional)" : ""}
+                Contraseña {user ? "(opcional)" : "(requerida)"}
               </FormLabel>
               <Input
                 type="password"
                 placeholder={
-                  form?.id
+                  user
                     ? "Dejar en blanco si no se modifica"
                     : "Ingresa una contraseña segura"
                 }
@@ -298,7 +303,7 @@ export default function EditUserModal({
                 isDisabled={isSubmitting}
               />
               <FormHelperText fontSize="xs" color={labelColor}>
-                {form?.id
+                {user
                   ? "Mínimo 6 caracteres si se modifica"
                   : "Mínimo 6 caracteres, incluye letras y números"}
               </FormHelperText>
@@ -331,10 +336,10 @@ export default function EditUserModal({
               onClick={handleSubmit}
               size="md"
               isLoading={isSubmitting}
-              loadingText={form?.id ? "Guardando..." : "Creando..."}
+              loadingText={user ? "Guardando..." : "Creando..."}
               _hover={{ bg: "blue.600" }}
             >
-              {form?.id ? "Guardar cambios" : "Crear usuario"}
+              {user ? "Guardar cambios" : "Crear usuario"}
             </Button>
           </HStack>
         </ModalFooter>
