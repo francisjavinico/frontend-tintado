@@ -19,7 +19,7 @@ import {
   useColorModeValue,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useVehiculoStore } from "../../stores/useVehiculoStore";
 import { Vehiculo } from "@/types/types";
 import axios from "axios";
@@ -49,6 +49,14 @@ export default function NewVehiculoModal({
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const initialRef = useRef<HTMLInputElement>(null);
+
+  // Resetear estado cuando el modal se abre
+  useEffect(() => {
+    if (isOpen) {
+      setLoading(false);
+      setErrors({});
+    }
+  }, [isOpen]);
 
   // Colores del tema
   const bgColor = useColorModeValue("white", "gray.800");
@@ -153,11 +161,13 @@ export default function NewVehiculoModal({
         status: "success",
         description: `${form.marca} ${form.modelo} ${form.año} ha sido agregado al sistema`,
       });
-      onClose();
       await fetchVehiculos();
       if (nuevo && typeof onVehiculoCreado === "function") {
         onVehiculoCreado(nuevo);
       }
+      // Resetear estado y cerrar modal después de todo el proceso
+      setLoading(false);
+      handleClose();
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 409) {
         toast({
@@ -179,6 +189,8 @@ export default function NewVehiculoModal({
   };
 
   const handleClose = () => {
+    // Resetear estado de loading
+    setLoading(false);
     // Resetear formulario al cerrar
     setForm({
       marca: "",

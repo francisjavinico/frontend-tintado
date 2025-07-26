@@ -7,17 +7,20 @@ import {
   useColorModeValue,
   Divider,
   Flex,
+  Button,
 } from "@chakra-ui/react";
 import { ChangeEvent, useState, useEffect } from "react";
 import FormInput from "../form/FormInput";
 import FormDateInput from "../form/FormDateInput";
 import VehicleAutocomplete from "../vehiculos/VehicleAutocomplete";
+import NewVehiculoModal from "../vehiculos/NewVehiculoModal";
 import {
   FiCheck,
   FiInfo,
   FiUser,
   FiCalendar,
   FiDollarSign,
+  FiPlus,
 } from "react-icons/fi";
 import { Servicio } from "@/types/types";
 import { Select, Input, HStack } from "@chakra-ui/react";
@@ -65,6 +68,7 @@ export default function CitaFormFields({
     formData.servicios?.[0]?.nombre || ""
   );
   const [descripcionOtro, setDescripcionOtro] = useState<string>("");
+  const [isVehiculoModalOpen, setIsVehiculoModalOpen] = useState(false);
   // Eliminar precioServicio y lógica relacionada
   // Eliminar botón Agregar y lista de servicios
   // Al seleccionar un servicio, se asigna automáticamente como el único servicio
@@ -233,6 +237,16 @@ export default function CitaFormFields({
             onChange={onChange}
             error={errors.vehiculoId}
           />
+          <Button
+            leftIcon={<FiPlus />}
+            colorScheme="teal"
+            size="sm"
+            onClick={() => setIsVehiculoModalOpen(true)}
+            _hover={{ transform: "translateY(-1px)" }}
+            transition="all 0.2s ease"
+          >
+            Agregar Vehículo
+          </Button>
         </VStack>
       </Box>
 
@@ -498,6 +512,20 @@ export default function CitaFormFields({
           />
         )}
       </Box>
+      <NewVehiculoModal
+        isOpen={isVehiculoModalOpen}
+        onClose={() => setIsVehiculoModalOpen(false)}
+        onVehiculoCreado={(vehiculo) => {
+          // Actualizar el formulario con el nuevo vehículo
+          onChange({
+            target: {
+              name: "vehiculoId",
+              value: vehiculo.id,
+            },
+          });
+          setIsVehiculoModalOpen(false);
+        }}
+      />
     </VStack>
   );
 }
